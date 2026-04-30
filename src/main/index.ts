@@ -23,6 +23,11 @@ process.on("unhandledRejection", (reason) => {
 app.whenReady().then(() => {
   console.log("Main process: App is ready, registering handlers...");
   registerIpcHandlers();
+  
+  // Diagnostic: Log ADB path
+  import("@main/devices/adbPath").then(({ getAdbPath }) => {
+    getAdbPath().then(path => console.log(`Main process: Detected ADB path: ${path}`));
+  });
 
   session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
     callback(false);
