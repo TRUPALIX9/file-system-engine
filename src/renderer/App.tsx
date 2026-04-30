@@ -69,7 +69,8 @@ export function App(): ReactElement {
     setHasStartedUp,
     pinnedFolders,
     browseProvider,
-    togglePin
+    togglePin,
+    refresh
   } = useFileSystem(isMac);
 
   const theme = useMemo(() => createTheme({
@@ -193,6 +194,7 @@ export function App(): ReactElement {
             pinnedFolders={pinnedFolders}
             onSelectProvider={handleSelectProvider}
             onBrowsePinned={handleBrowsePinned}
+            onRefresh={refresh}
             brandName={BRAND}
             isDark={isDark}
           />

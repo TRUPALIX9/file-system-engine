@@ -23,6 +23,7 @@ interface SidebarProps {
   pinnedFolders: Array<{ name: string, path: string, providerId: string }>;
   onSelectProvider: (p: MountedFilesystemDescriptor) => void;
   onBrowsePinned: (pin: { name: string, path: string, providerId: string }) => void;
+  onRefresh: () => void;
   brandName: string;
   isDark: boolean;
 }
@@ -38,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   pinnedFolders,
   onSelectProvider,
   onBrowsePinned,
+  onRefresh,
   brandName,
   isDark
 }) => {
@@ -129,7 +131,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </List>
 
-        <List subheader={<Typography variant="overline" sx={{ px: 2, fontWeight: 700, color: 'text.disabled' }}>Devices</Typography>}>
+        <List subheader={
+          <Box sx={{ px: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="overline" sx={{ fontWeight: 700, color: 'text.disabled' }}>Devices</Typography>
+            <IconButton size="small" onClick={onRefresh} sx={{ color: 'text.disabled', '&:hover': { color: 'primary.main' } }}>
+              <CustomIcon name="up" size={14} sx={{ transform: 'rotate(180deg)' }} />
+            </IconButton>
+          </Box>
+        }>
           {[
             ...allDesktopProviders.filter(p => p.id !== 'root' && p.displayName !== 'System' && !['Home', 'Desktop', 'Documents', 'Downloads'].includes(p.displayName)),
             ...(inventory?.androidDevices || [])

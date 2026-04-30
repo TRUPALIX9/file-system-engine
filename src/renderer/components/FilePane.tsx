@@ -14,6 +14,7 @@ import {
 } from '@mui/icons-material';
 import { FileEntry, DirectoryListing, MountedFilesystemDescriptor } from '@shared/types';
 import { CustomIcon } from './CustomIcon';
+import { FileEntryIcon } from './FileEntryIcon';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   cursor: 'pointer',
@@ -199,7 +200,7 @@ export const FilePane: React.FC<FilePaneProps> = ({
                   >
                     <TableCell sx={{ fontSize: '0.8rem', py: 0.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {entry.kind === 'directory' ? <CustomIcon name="storage" size={18} sx={{ color: 'primary.main' }} /> : <FileIcon sx={{ color: 'text.secondary', fontSize: 18 }} />}
+                        <FileEntryIcon entry={entry} size={18} />
                         <Typography variant="body2" noWrap sx={{ fontSize: '0.8rem' }}>{entry.name}</Typography>
                       </Box>
                     </TableCell>

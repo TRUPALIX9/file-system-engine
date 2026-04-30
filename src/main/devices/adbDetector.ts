@@ -9,6 +9,7 @@ export async function detectAndroidDevices(): Promise<AndroidProviderDescriptor[
   try {
     const adbPath = await getAdbPath();
     const { stdout } = await execAsync(`${adbPath} devices -l`);
+    console.log(`ADB raw output: "${stdout.trim()}"`);
     const lines = stdout.split('\n').map(line => line.trim()).filter(Boolean);
     
     // First line is usually "List of devices attached"
