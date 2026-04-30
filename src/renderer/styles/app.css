@@ -117,7 +117,8 @@ button {
   text-transform: uppercase;
 }
 
-.empty-device-row {
+.empty-device-row,
+.device-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -128,6 +129,36 @@ button {
   color: #5b6673;
   background: #fafbfc;
   font-size: 13px;
+}
+
+.device-list {
+  display: grid;
+  gap: 7px;
+}
+
+.device-row {
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+}
+
+.device-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-row small {
+  margin-left: auto;
+  color: #7a8491;
+  font-size: 11px;
+}
+
+.device-row.selected,
+.device-row:hover {
+  border-color: #9bc4c5;
+  background: #edf6f6;
 }
 
 .workspace {
@@ -283,6 +314,48 @@ button {
   color: #303944;
 }
 
+.file-list {
+  display: grid;
+}
+
+.file-row {
+  min-height: 42px;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #edf0f3;
+  color: #303944;
+  background: #ffffff;
+  text-align: left;
+}
+
+.file-row:not(:disabled) {
+  cursor: pointer;
+}
+
+.file-row:not(:disabled):hover {
+  background: #f2f7f7;
+}
+
+.file-row:disabled {
+  cursor: default;
+}
+
+.file-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-name svg {
+  flex: 0 0 auto;
+  color: #2b6f73;
+}
+
 .details-panel {
   display: flex;
   flex-direction: column;
@@ -333,6 +406,31 @@ button {
   padding-left: 18px;
 }
 
+.provider-facts {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.provider-facts div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.provider-facts dt {
+  color: #66717f;
+}
+
+.provider-facts dd {
+  margin: 0;
+  color: #303944;
+  font-weight: 700;
+  text-align: right;
+}
+
 .error-note {
   margin: 0;
   padding: 12px;
@@ -342,3 +440,11 @@ button {
   font-size: 13px;
 }
 
+.warning-note {
+  margin: 0;
+  padding: 10px;
+  border-radius: 8px;
+  color: #765019;
+  background: #fff2d1;
+  font-size: 13px;
+}

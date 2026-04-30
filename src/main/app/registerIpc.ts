@@ -2,14 +2,14 @@ import { ipcMain } from "electron";
 import { randomUUID } from "node:crypto";
 import { IPC_CHANNELS, type IpcContractMap } from "@shared/ipc";
 import {
-  type BrowseResult,
-  type DeviceInventory,
   type ExecuteOperationPlanResult,
   type FindDuplicatesResult,
   type LlmProviderStatus,
   type ScanJob,
   type StartScanResult
 } from "@shared/types";
+import { DeviceService } from "@main/devices/deviceService";
+import { validateIpcRequest } from "@main/security/ipcValidation";
 import { ok, toIpcFailure } from "./ipcResult";
 
 type IpcHandler<TChannel extends keyof IpcContractMap> = (
@@ -20,8 +20,9 @@ function handle<TChannel extends keyof IpcContractMap>(
   channel: TChannel,
   handler: IpcHandler<TChannel>
 ): void {
-  ipcMain.handle(channel, async (_event, request: IpcContractMap[TChannel]["request"]) => {
+  ipcMain.handle(channel, async (_event, rawRequest: unknown) => {
     try {
+      const request = validateIpcRequest(channel, rawRequest);
       const response = await handler(request);
       return ok(response);
     } catch (error) {
@@ -30,38 +31,12 @@ function handle<TChannel extends keyof IpcContractMap>(
   });
 }
 
-const emptyCapabilities = {
-  canBrowse: false,
-  canRead: false,
-  canWrite: false,
-  canRename: false,
-  canDelete: false,
-  canCreateFolder: false,
-  canStreamPreview: false,
-  canHashDirectly: false,
-  canRunTextExtraction: false
-};
+const deviceService = new DeviceService();
 
 export function registerIpcHandlers(): void {
-  handle(IPC_CHANNELS.devicesList, (): DeviceInventory => {
-    const refreshedAt = new Date().toISOString();
+  handle(IPC_CHANNELS.devicesList, () => deviceService.refreshInventory());
 
-    return {
-      mountedFilesystems: [],
-      androidDevices: [],
-      allProviders: [],
-      refreshedAt
-    };
-  });
-
-  handle(IPC_CHANNELS.browse, (request): BrowseResult => ({
-    listing: {
-      directory: request.location,
-      entries: [],
-      providerCapabilities: emptyCapabilities,
-      listedAt: new Date().toISOString()
-    }
-  }));
+  handle(IPC_CHANNELS.browse, (request) => deviceService.browse(request));
 
   handle(IPC_CHANNELS.scanStart, (request): StartScanResult => {
     const now = new Date().toISOString();

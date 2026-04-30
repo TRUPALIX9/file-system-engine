@@ -10,7 +10,9 @@ The product deliberately treats Android phones as a separate device class instea
 - Phase 2: Technical Architecture - complete
 - Phase 3: Folder Structure and Shared Types - complete
 - Phase 4: Electron App Shell - complete
-- Next: Phase 5 - Preload and IPC Contracts
+- Phase 5: Preload and IPC Contracts - complete
+- Phase 6: Desktop Drive Detection and Filesystem Support - complete
+- Next: Phase 7 - Writable Detection and NTFS Driver Assist
 
 ## Key Rules
 
@@ -28,6 +30,7 @@ The product deliberately treats Android phones as a separate device class instea
 - [Phase 2 - Technical Architecture](docs/phases/phase-02-technical-architecture.md)
 - [Phase 3 - Folder Structure and Shared Types](docs/phases/phase-03-folder-structure-shared-types.md)
 - [Phase 4 - Electron App Shell](docs/phases/phase-04-electron-app-shell.md)
+- [Phase 5 and 6 - IPC Contracts and Desktop Filesystems](docs/phases/phase-05-06-ipc-contracts-desktop-filesystems.md)
 - [Agent Markdown Pack](agents/)
 
 ## Development
@@ -54,3 +57,4 @@ npm run dev
 ```
 
 GitHub CI runs `npm ci`, `npm run build`, and `npm audit --audit-level=high`.
+It also runs `npm run test` for contract validation tests.

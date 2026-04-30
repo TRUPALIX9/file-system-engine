@@ -14,7 +14,13 @@ import {
   Sparkles
 } from "lucide-react";
 import { APP_NAME, PRODUCT_COPY } from "@shared/constants/app";
-import type { DeviceInventory, LlmProviderStatus } from "@shared/index";
+import type {
+  DeviceInventory,
+  DirectoryListing,
+  FileEntry,
+  LlmProviderStatus,
+  MountedFilesystemDescriptor
+} from "@shared/index";
 import { getFileSystemEngineApi } from "./api/fileSystemEngineClient";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
@@ -28,11 +34,56 @@ const shellStats = [
 
 const fileSystemEngine = getFileSystemEngineApi();
 
+function formatBytes(bytes?: number): string {
+  if (bytes === undefined) {
+    return "-";
+  }
+
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let value = bytes;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+
+  return `${value.toFixed(value >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+}
+
+function formatFilesystem(value: string): string {
+  return value
+    .split("-")
+    .map((part) => part.toUpperCase())
+    .join(" ");
+}
+
+function formatDate(value?: string): string {
+  if (!value) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(value));
+}
+
 export function App(): ReactElement {
   const [inventory, setInventory] = useState<DeviceInventory | null>(null);
   const [aiStatus, setAiStatus] = useState<LlmProviderStatus | null>(null);
+  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
+  const [listing, setListing] = useState<DirectoryListing | null>(null);
   const [state, setState] = useState<LoadState>("idle");
   const [error, setError] = useState<string | null>(null);
+
+  const selectedProvider = useMemo(
+    () =>
+      inventory?.mountedFilesystems.find((provider) => provider.id === selectedProviderId) ?? null,
+    [inventory?.mountedFilesystems, selectedProviderId]
+  );
 
   const stats = useMemo(
     () =>
@@ -57,6 +108,25 @@ export function App(): ReactElement {
     [aiStatus?.availability, inventory?.androidDevices.length, inventory?.mountedFilesystems.length]
   );
 
+  async function browseProvider(provider: MountedFilesystemDescriptor, path = provider.mountPath): Promise<void> {
+    const result = await fileSystemEngine.storage.browse({
+      location: {
+        providerId: provider.id,
+        providerKind: "desktop-filesystem",
+        path
+      },
+      includeHidden: false
+    });
+
+    if (!result.ok) {
+      setError(result.error.message);
+      setListing(null);
+      return;
+    }
+
+    setListing(result.data.listing);
+  }
+
   async function refresh(): Promise<void> {
     setState("loading");
     setError(null);
@@ -80,7 +150,35 @@ export function App(): ReactElement {
 
     setInventory(devicesResult.data);
     setAiStatus(aiResult.data);
+    const nextProvider =
+      devicesResult.data.mountedFilesystems.find((provider) => provider.id === selectedProviderId) ??
+      devicesResult.data.mountedFilesystems[0] ??
+      null;
+
+    setSelectedProviderId(nextProvider?.id ?? null);
+
+    if (nextProvider) {
+      await browseProvider(nextProvider);
+    } else {
+      setListing(null);
+    }
+
     setState("ready");
+  }
+
+  async function selectProvider(provider: MountedFilesystemDescriptor): Promise<void> {
+    setSelectedProviderId(provider.id);
+    setError(null);
+    await browseProvider(provider);
+  }
+
+  async function openEntry(entry: FileEntry): Promise<void> {
+    if (entry.kind !== "directory" || !selectedProvider) {
+      return;
+    }
+
+    setError(null);
+    await browseProvider(selectedProvider, entry.ref.path);
   }
 
   useEffect(() => {
@@ -121,10 +219,27 @@ export function App(): ReactElement {
 
         <section className="sidebar-section" aria-labelledby="mounted-heading">
           <h2 id="mounted-heading">Mounted filesystems</h2>
-          <div className="empty-device-row">
-            <HardDrive size={18} />
-            <span>{inventory?.mountedFilesystems.length ?? 0} connected</span>
-          </div>
+          {(inventory?.mountedFilesystems.length ?? 0) > 0 ? (
+            <div className="device-list">
+              {inventory?.mountedFilesystems.map((provider) => (
+                <button
+                  className={`device-row ${provider.id === selectedProviderId ? "selected" : ""}`}
+                  key={provider.id}
+                  type="button"
+                  onClick={() => void selectProvider(provider)}
+                >
+                  <HardDrive size={18} />
+                  <span>{provider.displayName}</span>
+                  <small>{formatFilesystem(provider.filesystemType)}</small>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-device-row">
+              <HardDrive size={18} />
+              <span>0 connected</span>
+            </div>
+          )}
         </section>
 
         <section className="sidebar-section" aria-labelledby="android-heading">
@@ -139,8 +254,8 @@ export function App(): ReactElement {
       <section className="workspace">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Phase 4</p>
-            <h2>Electron App Shell</h2>
+            <p className="eyebrow">Phase 5 + 6</p>
+            <h2>IPC and Desktop Filesystems</h2>
           </div>
           <button className="icon-button" type="button" onClick={() => void refresh()} title="Refresh">
             <RefreshCw size={18} />
@@ -161,7 +276,13 @@ export function App(): ReactElement {
           <div className="surface-header">
             <div>
               <h3 id="browser-heading">Provider browser</h3>
-              <p>{state === "loading" ? "Refreshing provider inventory" : "Ready for providers"}</p>
+              <p>
+                {listing
+                  ? listing.directory.path
+                  : state === "loading"
+                    ? "Refreshing provider inventory"
+                    : "Select a mounted filesystem"}
+              </p>
             </div>
             <span className={`status-pill ${state}`}>
               {state === "error" ? <AlertTriangle size={15} /> : <CheckCircle2 size={15} />}
@@ -172,15 +293,42 @@ export function App(): ReactElement {
           <div className="table-shell">
             <div className="table-row table-head">
               <span>Name</span>
-              <span>Type</span>
-              <span>Access</span>
-              <span>Last seen</span>
+              <span>Kind</span>
+              <span>Size</span>
+              <span>Modified</span>
             </div>
-            <div className="table-empty">
-              <FolderOpen size={28} />
-              <strong>No storage providers loaded</strong>
-              <span>Drive and Android provider services connect in the next implementation phases.</span>
-            </div>
+            {listing && listing.entries.length > 0 ? (
+              <div className="file-list">
+                {listing.entries.map((entry) => (
+                  <button
+                    className="table-row file-row"
+                    key={entry.ref.path}
+                    type="button"
+                    onClick={() => void openEntry(entry)}
+                    disabled={entry.kind !== "directory"}
+                    title={entry.name}
+                  >
+                    <span className="file-name">
+                      {entry.kind === "directory" ? <FolderOpen size={16} /> : <FileSearch size={16} />}
+                      {entry.name}
+                    </span>
+                    <span>{entry.kind}</span>
+                    <span>{formatBytes(entry.metadata.sizeBytes)}</span>
+                    <span>{formatDate(entry.metadata.modifiedAt)}</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="table-empty">
+                <FolderOpen size={28} />
+                <strong>{selectedProvider ? "This location is empty" : "No storage providers loaded"}</strong>
+                <span>
+                  {selectedProvider
+                    ? "Hidden files are currently filtered from this listing."
+                    : "Run inside Electron to load real mounted filesystem providers."}
+                </span>
+              </div>
+            )}
           </div>
         </section>
       </section>
@@ -189,23 +337,55 @@ export function App(): ReactElement {
         <section className="detail-block">
           <div className="detail-title">
             <ShieldCheck size={18} />
-            <h2>Security boundary</h2>
+            <h2>IPC boundary</h2>
           </div>
           <ul>
-            <li>contextIsolation enabled</li>
-            <li>nodeIntegration disabled</li>
-            <li>typed preload API only</li>
-            <li>permission prompts denied by default</li>
+            <li>Runtime payload validation</li>
+            <li>Typed preload API only</li>
+            <li>Provider-scoped browse requests</li>
+            <li>Renderer has no Node access</li>
           </ul>
         </section>
 
-        <section className="detail-block">
-          <div className="detail-title">
-            <HardDrive size={18} />
-            <h2>NTFS rule</h2>
-          </div>
-          <p>{PRODUCT_COPY.ntfsReadOnly}</p>
-        </section>
+        {selectedProvider ? (
+          <section className="detail-block">
+            <div className="detail-title">
+              <HardDrive size={18} />
+              <h2>{selectedProvider.displayName}</h2>
+            </div>
+            <dl className="provider-facts">
+              <div>
+                <dt>Filesystem</dt>
+                <dd>{formatFilesystem(selectedProvider.filesystemType)}</dd>
+              </div>
+              <div>
+                <dt>Access</dt>
+                <dd>{selectedProvider.accessState}</dd>
+              </div>
+              <div>
+                <dt>Total</dt>
+                <dd>{formatBytes(selectedProvider.usage.totalBytes)}</dd>
+              </div>
+              <div>
+                <dt>Free</dt>
+                <dd>{formatBytes(selectedProvider.usage.availableBytes)}</dd>
+              </div>
+            </dl>
+            {selectedProvider.warnings.map((warning) => (
+              <p className="warning-note" key={warning.code}>
+                {warning.message}
+              </p>
+            ))}
+          </section>
+        ) : (
+          <section className="detail-block">
+            <div className="detail-title">
+              <HardDrive size={18} />
+              <h2>NTFS rule</h2>
+            </div>
+            <p>{PRODUCT_COPY.ntfsReadOnly}</p>
+          </section>
+        )}
 
         <section className="detail-block">
           <div className="detail-title">

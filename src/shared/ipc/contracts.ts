@@ -14,6 +14,7 @@ import type {
   StartScanRequest,
   StartScanResult
 } from "../types";
+import type { IpcErrorCode } from "./errors";
 
 export interface IpcSuccess<T> {
   ok: true;
@@ -23,7 +24,7 @@ export interface IpcSuccess<T> {
 export interface IpcFailure {
   ok: false;
   error: {
-    code: string;
+    code: IpcErrorCode;
     message: string;
     details?: unknown;
   };
