@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-electron/
+coverage/
+.vite/
+.DS_Store
+*.log
+*.local
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
