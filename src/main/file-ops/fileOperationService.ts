@@ -1,7 +1,11 @@
 import { shell } from "electron";
 import { cp, mkdir, rename, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, posix } from "node:path";
 import { randomUUID } from "node:crypto";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 import type {
   ExecuteOperationPlanRequest,
   ExecuteOperationPlanResult,
@@ -9,6 +13,8 @@ import type {
   OperationLogEntry,
   StoragePathRef
 } from "@shared/types";
+import { DesktopFilesystemProvider } from "@main/providers/DesktopFilesystemProvider";
+import { AndroidAdbProvider } from "@main/providers/AndroidAdbProvider";
 import { AppError } from "@main/app/AppError";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
@@ -32,25 +38,31 @@ export class FileOperationService {
   constructor(private readonly registry: ProviderRegistry) {}
 
   private resolveRef(ref: StoragePathRef): string {
-    assertDesktopRef(ref);
     const provider = this.registry.get(ref.providerId);
 
-    if (provider.kind !== "desktop-filesystem") {
-      throw new AppError("not-implemented");
+    if (provider.kind === "desktop-filesystem") {
+      if (provider.descriptor.kind !== "desktop-filesystem") {
+        throw new AppError("not-implemented");
+      }
+      return assertPathInsideRoot(provider.descriptor.mountPath, ref.path);
     }
 
-    if (provider.descriptor.kind !== "desktop-filesystem") {
-      throw new AppError("not-implemented");
-    }
-
-    return assertPathInsideRoot(provider.descriptor.mountPath, ref.path);
+    // For Android or other non-desktop providers, we return the path directly
+    // but these cannot be used with standard node:fs methods.
+    return ref.path;
   }
 
   private assertWritable(ref: StoragePathRef): void {
     const provider = this.registry.get(ref.providerId);
 
-    if (!provider.descriptor.capabilities.canWrite) {
-      throw new AppError("permission-denied", "This provider is read-only.");
+    if (provider.descriptor.kind === "desktop-filesystem") {
+      if (!provider.descriptor.capabilities.canWrite) {
+        throw new AppError("permission-denied", "This provider is read-only.");
+      }
+    } else if (provider.descriptor.kind === "android-adb") {
+      if (provider.descriptor.authorizationState !== "authorized") {
+        throw new AppError("permission-denied", "Android device not authorized.");
+      }
     }
   }
 
@@ -144,15 +156,60 @@ export class FileOperationService {
   private async executeOperation(operation: FileOperation): Promise<void> {
     switch (operation.kind) {
       case "copy": {
-        const source = this.resolveRef(operation.source);
-        const destination = this.resolveRef(operation.destination);
+        const sourceRef = operation.source;
+        const destRef = operation.destination;
+        const sourceProvider = this.registry.get(sourceRef.providerId);
+        const destProvider = this.registry.get(destRef.providerId);
+
+        if (sourceProvider.kind === "android-adb" && destProvider.kind === "android-adb") {
+          // Internal Android copy
+          if (sourceRef.providerId !== destRef.providerId) {
+             throw new AppError("not-implemented", "Copying between different Android devices is not supported yet.");
+          }
+          await execAsync(`adb -s ${(sourceProvider as AndroidAdbProvider).descriptor.serial} shell "cp -r \\"${sourceRef.path}\\" \\"${destRef.path}\\""`);
+          return;
+        }
+
+        if (sourceProvider.kind === "android-adb") {
+          return (sourceProvider as AndroidAdbProvider).pull(sourceRef.path, this.resolveRef(destRef));
+        }
+
+        if (destProvider.kind === "android-adb") {
+          return (destProvider as AndroidAdbProvider).push(this.resolveRef(sourceRef), destRef.path);
+        }
+
+        // Standard desktop copy
+        const source = this.resolveRef(sourceRef);
+        const destination = this.resolveRef(destRef);
         await cp(source, destination, { recursive: true, force: false, errorOnExist: true });
         return;
       }
 
       case "move": {
-        const source = this.resolveRef(operation.source);
-        const destination = this.resolveRef(operation.destination);
+        const sourceRef = operation.source;
+        const destRef = operation.destination;
+        const sourceProvider = this.registry.get(sourceRef.providerId);
+        const destProvider = this.registry.get(destRef.providerId);
+
+        if (sourceProvider.kind === "android-adb" && destProvider.kind === "android-adb") {
+          // Internal Android move
+          if (sourceRef.providerId !== destRef.providerId) {
+             throw new AppError("not-implemented", "Moving between different Android devices is not supported yet.");
+          }
+          await (sourceProvider as AndroidAdbProvider).rename(sourceRef.path, destRef.path);
+          return;
+        }
+
+        // If cross-provider (Android to Desktop or vice-versa), do copy + delete
+        if (sourceProvider.kind !== destProvider.kind) {
+          await this.executeOperation({ ...operation, kind: "copy", id: randomUUID(), requiresConfirmation: false } as any);
+          await this.executeOperation({ ...operation, kind: "delete", id: randomUUID(), requiresConfirmation: false } as any);
+          return;
+        }
+
+        // Standard desktop move
+        const source = this.resolveRef(sourceRef);
+        const destination = this.resolveRef(destRef);
 
         try {
           await rename(source, destination);
@@ -171,26 +228,61 @@ export class FileOperationService {
       }
 
       case "rename": {
-        const source = this.resolveRef(operation.source);
-        const destination = join(dirname(source), assertSafeName(operation.newName));
+        const sourceRef = operation.source;
+        const provider = this.registry.get(sourceRef.providerId);
+        const newName = assertSafeName(operation.newName);
+
+        if (provider.kind === "android-adb") {
+          const destPath = posix.join(posix.dirname(sourceRef.path), newName);
+          await (provider as AndroidAdbProvider).rename(sourceRef.path, destPath);
+          return;
+        }
+
+        const source = this.resolveRef(sourceRef);
+        const destination = join(dirname(source), newName);
         await rename(source, destination);
         return;
       }
 
       case "delete": {
-        const source = this.resolveRef(operation.source);
+        const sourceRef = operation.source;
+        const provider = this.registry.get(sourceRef.providerId);
+
+        if (provider.kind === "android-adb") {
+          await (provider as AndroidAdbProvider).delete(sourceRef.path);
+          return;
+        }
+
+        const source = this.resolveRef(sourceRef);
         await shell.trashItem(source);
         return;
       }
 
       case "create-folder": {
-        const destination = this.resolveRef(operation.destination);
+        const destRef = operation.destination;
+        const provider = this.registry.get(destRef.providerId);
+
+        if (provider.kind === "android-adb") {
+          await (provider as AndroidAdbProvider).makeDirectory(destRef.path);
+          return;
+        }
+
+        const destination = this.resolveRef(destRef);
         await mkdir(destination, { recursive: false });
         return;
       }
 
       case "create-file": {
-        const destination = this.resolveRef(operation.destination);
+        const destRef = operation.destination;
+        const provider = this.registry.get(destRef.providerId);
+
+        if (provider.kind === "android-adb") {
+          // No easy way to create empty file via ADB without shell, just touch it
+          await execAsync(`adb -s ${(provider as AndroidAdbProvider).descriptor.serial} shell "touch \\"${destRef.path}\\""`);
+          return;
+        }
+
+        const destination = this.resolveRef(destRef);
         await writeFile(destination, "", { flag: "wx" });
         return;
       }
@@ -201,9 +293,27 @@ export class FileOperationService {
         return;
       }
 
-      case "pull-from-android":
-      case "push-to-android":
-        throw new AppError("not-implemented", "Android file transfer operations are implemented in the Android phase.");
+      case "pull-from-android": {
+        const source = operation.source;
+        const destination = this.resolveRef(operation.destination);
+        const provider = this.registry.get(source.providerId);
+        if (provider.kind !== "android-adb") {
+          throw new AppError("invalid-request", "Source must be an Android ADB provider.");
+        }
+        await (provider as AndroidAdbProvider).pull(source.path, destination);
+        return;
+      }
+
+      case "push-to-android": {
+        const source = this.resolveRef(operation.source);
+        const destination = operation.destination;
+        const provider = this.registry.get(destination.providerId);
+        if (provider.kind !== "android-adb") {
+          throw new AppError("invalid-request", "Destination must be an Android ADB provider.");
+        }
+        await (provider as AndroidAdbProvider).push(source, destination.path);
+        return;
+      }
     }
   }
 }

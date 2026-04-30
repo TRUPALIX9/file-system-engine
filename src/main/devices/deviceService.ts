@@ -14,9 +14,11 @@ import type {
 import { describeDesktopPath, detectMountedFilesystems } from "./driveDetector";
 import { DesktopFilesystemProvider } from "@main/providers/DesktopFilesystemProvider";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
+import { AndroidAdbProvider } from "@main/providers/AndroidAdbProvider";
 import { FileOperationService } from "@main/file-ops/fileOperationService";
 import { StorageAnalysisService } from "@main/storage/storageAnalysisService";
 import { recordsService } from "@main/database/recordsService";
+import { detectAndroidDevices } from "./adbDetector";
 
 async function existingKnownFolders(): Promise<MountedFilesystemDescriptor[]> {
   const home = homedir();
@@ -47,20 +49,23 @@ export class DeviceService {
   private readonly storageAnalysis = new StorageAnalysisService(this.registry);
 
   async refreshInventory(): Promise<DeviceInventory> {
-    const [mountedFilesystems, knownFolders] = await Promise.all([
+    const [mountedFilesystems, knownFolders, androidDevices] = await Promise.all([
       detectMountedFilesystems(),
-      existingKnownFolders()
+      existingKnownFolders(),
+      detectAndroidDevices()
     ]);
     const desktopDescriptors = [...mountedFilesystems, ...knownFolders];
-    const providers = desktopDescriptors.map((descriptor) => new DesktopFilesystemProvider(descriptor));
-
-    this.registry.replace(providers);
+    
+    const desktopProviders = desktopDescriptors.map((descriptor) => new DesktopFilesystemProvider(descriptor));
+    const adbProviders = androidDevices.map((descriptor) => new AndroidAdbProvider(descriptor));
+    
+    this.registry.replace([...desktopProviders, ...adbProviders]);
 
     return {
       mountedFilesystems,
       knownFolders,
-      androidDevices: [],
-      allProviders: desktopDescriptors,
+      androidDevices,
+      allProviders: [...desktopDescriptors, ...androidDevices],
       refreshedAt: new Date().toISOString()
     };
   }
