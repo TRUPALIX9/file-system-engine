@@ -60,12 +60,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <Box sx={{
           width: 32, height: 32,
           borderRadius: 1,
-          bgcolor: isDark ? 'primary.main' : '#0F172A',
+          bgcolor: '#0F172A',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+          overflow: 'hidden'
         }}>
-          <CustomIcon name="./logos/fse-app-icon-small.svg" size={20} sx={{ color: '#ffffff' }} />
+          <img 
+            src="/logos/fse-app-icon-small.svg" 
+            alt="Logo" 
+            style={{ width: 22, height: 22, objectFit: 'contain' }} 
+          />
         </Box>
         <Box>
           <Typography variant="caption" sx={{ fontWeight: 900, fontSize: '0.8rem', lineHeight: 1, display: 'block', letterSpacing: -0.3 }}>

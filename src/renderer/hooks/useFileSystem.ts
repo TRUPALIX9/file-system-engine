@@ -3,7 +3,8 @@ import {
   DeviceInventory, 
   DirectoryListing, 
   FileEntry, 
-  MountedFilesystemDescriptor 
+  MountedFilesystemDescriptor,
+  StorageProviderDescriptor 
 } from '@shared/types';
 
 export function useFileSystem(isMac: boolean) {
@@ -12,8 +13,8 @@ export function useFileSystem(isMac: boolean) {
   const [selectedProviderIdRight, setSelectedProviderIdRight] = useState<string | null>(null);
   const [listing, setListing] = useState<DirectoryListing | null>(null);
   const [listingRight, setListingRight] = useState<DirectoryListing | null>(null);
-  const [selectedEntry, setSelectedEntry] = useState<FileEntry | null>(null);
-  const [selectedEntryRight, setSelectedEntryRight] = useState<FileEntry | null>(null);
+  const [selectedEntries, setSelectedEntries] = useState<FileEntry[]>([]);
+  const [selectedEntriesRight, setSelectedEntriesRight] = useState<FileEntry[]>([]);
   const [loadingLeft, setLoadingLeft] = useState(false);
   const [loadingRight, setLoadingRight] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +47,7 @@ export function useFileSystem(isMac: boolean) {
     return Array.from(unique.values()).filter(p => !(p.displayName === 'Macintosh HD' && isMac));
   }, [inventory, isMac]);
 
-  const browseProvider = useCallback(async (provider: MountedFilesystemDescriptor, path: string, pane: "left" | "right") => {
+  const browseProvider = useCallback(async (provider: StorageProviderDescriptor, path: string, pane: "left" | "right") => {
     const engine = (window as any).fileSystemEngine;
     if (!engine) return;
 
@@ -119,16 +120,17 @@ export function useFileSystem(isMac: boolean) {
   return {
     inventory,
     allDesktopProviders,
+    allProviders: inventory ? [...allDesktopProviders, ...(inventory.androidDevices || [])] : [],
     selectedProviderId,
     setSelectedProviderId,
     selectedProviderIdRight,
     setSelectedProviderIdRight,
     listing,
     listingRight,
-    selectedEntry,
-    setSelectedEntry,
-    selectedEntryRight,
-    setSelectedEntryRight,
+    selectedEntries,
+    setSelectedEntries,
+    selectedEntriesRight,
+    setSelectedEntriesRight,
     loadingLeft,
     loadingRight,
     error,

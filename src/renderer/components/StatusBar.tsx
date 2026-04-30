@@ -4,8 +4,8 @@ import { FileEntry, DirectoryListing } from '@shared/types';
 
 interface StatusBarProps {
   focusedPane: 'left' | 'right';
-  selectedEntry: FileEntry | null;
-  selectedEntryRight: FileEntry | null;
+  selectedEntries: FileEntry[];
+  selectedEntriesRight: FileEntry[];
   listing: DirectoryListing | null;
   listingRight: DirectoryListing | null;
   appName: string;
@@ -14,14 +14,14 @@ interface StatusBarProps {
 
 export const StatusBar: React.FC<StatusBarProps> = ({
   focusedPane,
-  selectedEntry,
-  selectedEntryRight,
+  selectedEntries,
+  selectedEntriesRight,
   listing,
   listingRight,
   appName,
   loadState
 }) => {
-  const activeEntry = focusedPane === 'left' ? selectedEntry : selectedEntryRight;
+  const activeEntries = focusedPane === 'left' ? selectedEntries : selectedEntriesRight;
   const activeListing = focusedPane === 'left' ? listing : listingRight;
 
   return (
@@ -39,7 +39,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography variant="caption" color="text.secondary">
-            {activeEntry ? `Selected: ${activeEntry.name}` : 'Ready'}
+            {activeEntries.length === 0 ? 'Ready' : activeEntries.length === 1 ? `Selected: ${activeEntries[0].name}` : `${activeEntries.length} items selected`}
           </Typography>
           <Divider orientation="vertical" flexItem sx={{ height: 12, my: 'auto' }} />
           <Typography variant="caption" color="text.secondary">

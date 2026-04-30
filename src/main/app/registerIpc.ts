@@ -26,7 +26,11 @@ function handle<TChannel extends keyof IpcContractMap>(
       const request = validateIpcRequest(channel, rawRequest);
       const response = await handler(request);
       return ok(response);
-    } catch (error) {
+    } catch (error: any) {
+      console.error(`IPC Error on channel [${channel}]:`, error);
+      if (error.details) {
+        console.error('Error Details:', JSON.stringify(error.details, null, 2));
+      }
       return toIpcFailure(error);
     }
   });

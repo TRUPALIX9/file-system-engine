@@ -12,7 +12,7 @@ import {
   Description as FileIcon,
   ErrorOutlined as ErrorIcon
 } from '@mui/icons-material';
-import { FileEntry, DirectoryListing, MountedFilesystemDescriptor } from '@shared/types';
+import { FileEntry, DirectoryListing, StorageProviderDescriptor, MountedFilesystemDescriptor } from '@shared/types';
 import { CustomIcon } from './CustomIcon';
 import { FileEntryIcon } from './FileEntryIcon';
 
@@ -28,10 +28,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 interface FilePaneProps {
   pane: 'left' | 'right';
   currentListing: DirectoryListing | null;
-  currentProvider: MountedFilesystemDescriptor | null;
-  selectedEntry: FileEntry | null;
+  currentProvider: StorageProviderDescriptor | null;
+  selectedEntries: FileEntry[];
   loading: boolean;
-  onSelectEntry: (entry: FileEntry) => void;
+  onSelectEntries: (entries: FileEntry[]) => void;
   onOpenEntry: (entry: FileEntry, pane: 'left' | 'right') => void;
   onNavigateTo: (path: string, pane: 'left' | 'right') => void;
   onContextMenu: (e: React.MouseEvent, entry: FileEntry) => void;
@@ -45,9 +45,9 @@ export const FilePane: React.FC<FilePaneProps> = ({
   pane,
   currentListing,
   currentProvider,
-  selectedEntry,
+  selectedEntries,
   loading,
-  onSelectEntry,
+  onSelectEntries,
   onOpenEntry,
   onNavigateTo,
   onContextMenu,
@@ -57,17 +57,42 @@ export const FilePane: React.FC<FilePaneProps> = ({
   setFocusedPane
 }) => {
   const theme = useTheme();
+
+  const handleRowClick = (e: React.MouseEvent, entry: FileEntry) => {
+    if (e.ctrlKey || e.metaKey) {
+      const isAlreadySelected = selectedEntries.some(se => se.ref.path === entry.ref.path);
+      if (isAlreadySelected) {
+        onSelectEntries(selectedEntries.filter(se => se.ref.path !== entry.ref.path));
+      } else {
+        onSelectEntries([...selectedEntries, entry]);
+      }
+    } else if (e.shiftKey && selectedEntries.length > 0 && currentListing) {
+      const lastSelected = selectedEntries[selectedEntries.length - 1];
+      const lastIdx = currentListing.entries.findIndex(en => en.ref.path === lastSelected.ref.path);
+      const currentIdx = currentListing.entries.findIndex(en => en.ref.path === entry.ref.path);
+      
+      if (lastIdx !== -1 && currentIdx !== -1) {
+        const start = Math.min(lastIdx, currentIdx);
+        const end = Math.max(lastIdx, currentIdx);
+        const range = currentListing.entries.slice(start, end + 1);
+        onSelectEntries(Array.from(new Set([...selectedEntries, ...range])));
+      }
+    } else {
+      onSelectEntries([entry]);
+    }
+  };
   
   const renderBreadcrumbs = () => {
     if (!currentListing || !currentProvider || !currentListing.directory) return null;
 
     const path = currentListing.directory.path;
+    const rootPath = currentProvider.kind === 'desktop-filesystem' ? currentProvider.mountPath : '/';
     const crumbs: { name: string; path: string }[] = [];
-    crumbs.push({ name: currentProvider.displayName || "Root", path: currentProvider.mountPath });
+    crumbs.push({ name: currentProvider.displayName || "Root", path: rootPath });
 
-    if (path && currentProvider.mountPath && path.startsWith(currentProvider.mountPath)) {
-      const relativePath = path.slice(currentProvider.mountPath.length).split(/[\\/]/).filter(Boolean);
-      let cumulative = currentProvider.mountPath;
+    if (path && path.startsWith(rootPath)) {
+      const relativePath = path.slice(rootPath.length).split(/[\\/]/).filter(Boolean);
+      let cumulative = rootPath;
       relativePath.forEach(part => {
         cumulative = cumulative + (cumulative.endsWith("/") || cumulative.endsWith("\\") ? "" : "/") + part;
         crumbs.push({ name: part, path: cumulative });
@@ -109,25 +134,32 @@ export const FilePane: React.FC<FilePaneProps> = ({
         p: 1, 
         borderBottom: '1px solid', 
         borderColor: 'divider', 
-        display: 'flex', 
+        display: 'flex',
         alignItems: 'center',
         bgcolor: 'background.paper'
       }}>
-        <IconButton size="small" onClick={() => onNavigateTo("..", pane)} disabled={!currentListing}>
-          <CustomIcon name="up" size={20} />
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="overline" sx={{ fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>
+            Select Folder
+          </Typography>
+          <IconButton size="small" onClick={() => onNavigateTo("..", pane)} disabled={!currentListing}>
+            <CustomIcon name="up" size={18} />
+          </IconButton>
+        </Box>
         {renderBreadcrumbs()}
         <Box sx={{ flex: 1 }} />
-        <Button 
+        <IconButton 
           size="small" 
-          variant="contained" 
-          startIcon={<CustomIcon name="create-folder" size={16} />} 
-          sx={{ px: 2, fontSize: '0.7rem' }} 
-          disabled={!currentProvider}
+          color="primary"
+          disabled={true} 
           onClick={onNewFolder}
+          sx={{ 
+            bgcolor: alpha(theme.palette.primary.main, 0.1),
+            '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
+          }}
         >
-          New Folder
-        </Button>
+          <CustomIcon name="create-folder" size={20} />
+        </IconButton>
       </Box>
 
       <Box sx={{ flex: 1, overflow: 'auto', position: 'relative' }}>
@@ -158,7 +190,13 @@ export const FilePane: React.FC<FilePaneProps> = ({
             <Button 
               variant="outlined" 
               size="small"
-              onClick={() => currentProvider && onNavigateTo(currentProvider.mountPath, pane)}
+              onClick={() => {
+                if (!currentProvider) return;
+                const rootPath = currentProvider.kind === 'desktop-filesystem' 
+                  ? (currentProvider as MountedFilesystemDescriptor).mountPath 
+                  : '/';
+                onNavigateTo(rootPath, pane);
+              }}
             >
               Return to Drive Root
             </Button>
@@ -192,9 +230,9 @@ export const FilePane: React.FC<FilePaneProps> = ({
               <TableBody>
                 {currentListing?.entries.map((entry) => (
                   <StyledTableRow 
-                    key={entry.name}
-                    selected={selectedEntry?.name === entry.name}
-                    onClick={() => onSelectEntry(entry)}
+                    key={entry.ref.path}
+                    selected={selectedEntries.some(se => se.ref.path === entry.ref.path)}
+                    onClick={(e) => handleRowClick(e, entry)}
                     onDoubleClick={() => onOpenEntry(entry, pane)}
                     onContextMenu={(e) => onContextMenu(e, entry)}
                   >

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Typography, Button, Stack } from '@mui/material';
+import { Box, Typography, Button, Stack, CircularProgress } from '@mui/material';
 import { FilePane } from './FilePane';
-import { FileEntry, DirectoryListing, MountedFilesystemDescriptor } from '@shared/types';
+import { FileEntry, DirectoryListing, StorageProviderDescriptor } from '@shared/types';
 import { CustomIcon } from './CustomIcon';
 
 interface TransferHubProps {
@@ -9,18 +9,19 @@ interface TransferHubProps {
   setFocusedPane: (pane: 'left' | 'right') => void;
   listing: DirectoryListing | null;
   listingRight: DirectoryListing | null;
-  selectedProvider: MountedFilesystemDescriptor | null;
-  selectedProviderRight: MountedFilesystemDescriptor | null;
-  selectedEntry: FileEntry | null;
-  selectedEntryRight: FileEntry | null;
+  selectedProvider: StorageProviderDescriptor | null;
+  selectedProviderRight: StorageProviderDescriptor | null;
+  selectedEntries: FileEntry[];
+  selectedEntriesRight: FileEntry[];
   loadingLeft: boolean;
   loadingRight: boolean;
-  onSelectEntry: (entry: FileEntry, pane: 'left' | 'right') => void;
+  onSelectEntries: (entries: FileEntry[], pane: 'left' | 'right') => void;
   onOpenEntry: (entry: FileEntry, pane: 'left' | 'right') => void;
   onNavigateTo: (path: string, pane: 'left' | 'right') => void;
   onContextMenu: (e: React.MouseEvent, entry: FileEntry) => void;
   onExecuteTransfer: (kind: 'copy' | 'move') => void;
   globalError: string | null;
+  isTransferring: boolean;
 }
 
 export const TransferHub: React.FC<TransferHubProps> = ({
@@ -30,16 +31,17 @@ export const TransferHub: React.FC<TransferHubProps> = ({
   listingRight,
   selectedProvider,
   selectedProviderRight,
-  selectedEntry,
-  selectedEntryRight,
+  selectedEntries,
+  selectedEntriesRight,
   loadingLeft,
   loadingRight,
-  onSelectEntry,
+  onSelectEntries,
   onOpenEntry,
   onNavigateTo,
   onContextMenu,
   onExecuteTransfer,
-  globalError
+  globalError,
+  isTransferring
 }) => {
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -52,7 +54,8 @@ export const TransferHub: React.FC<TransferHubProps> = ({
           <Button 
             variant="contained" 
             size="medium" 
-            startIcon={<CustomIcon name="copy" size={18} />} 
+            disabled={isTransferring || !listing || !listingRight || (focusedPane === 'left' ? selectedEntries.length === 0 : selectedEntriesRight.length === 0)}
+            startIcon={isTransferring ? <CircularProgress size={18} color="inherit" /> : <CustomIcon name="copy" size={18} />} 
             onClick={() => onExecuteTransfer('copy')}
             sx={{ px: 3, bgcolor: 'secondary.main', '&:hover': { bgcolor: 'secondary.dark' } }}
           >
@@ -61,7 +64,8 @@ export const TransferHub: React.FC<TransferHubProps> = ({
           <Button 
             variant="contained" 
             size="medium" 
-            startIcon={<CustomIcon name="move" size={18} />} 
+            disabled={isTransferring || !listing || !listingRight || (focusedPane === 'left' ? selectedEntries.length === 0 : selectedEntriesRight.length === 0)}
+            startIcon={isTransferring ? <CircularProgress size={18} color="inherit" /> : <CustomIcon name="move" size={18} />} 
             onClick={() => onExecuteTransfer('move')}
             sx={{ px: 3 }}
           >
@@ -83,9 +87,9 @@ export const TransferHub: React.FC<TransferHubProps> = ({
             pane="left"
             currentListing={listing}
             currentProvider={selectedProvider}
-            selectedEntry={selectedEntry}
+            selectedEntries={selectedEntries}
             loading={loadingLeft}
-            onSelectEntry={(e) => onSelectEntry(e, 'left')}
+            onSelectEntries={(e) => onSelectEntries(e, 'left')}
             onOpenEntry={onOpenEntry}
             onNavigateTo={onNavigateTo}
             onContextMenu={onContextMenu}
@@ -108,9 +112,9 @@ export const TransferHub: React.FC<TransferHubProps> = ({
             pane="right"
             currentListing={listingRight}
             currentProvider={selectedProviderRight}
-            selectedEntry={selectedEntryRight}
+            selectedEntries={selectedEntriesRight}
             loading={loadingRight}
-            onSelectEntry={(e) => onSelectEntry(e, 'right')}
+            onSelectEntries={(e) => onSelectEntries(e, 'right')}
             onOpenEntry={onOpenEntry}
             onNavigateTo={onNavigateTo}
             onContextMenu={onContextMenu}

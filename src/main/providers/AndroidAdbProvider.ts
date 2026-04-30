@@ -8,7 +8,7 @@ import { getAdbPath } from "../devices/adbPath";
 const execAsync = promisify(exec);
 
 export class AndroidAdbProvider implements StorageProvider {
-  constructor(public readonly descriptor: AndroidProviderDescriptor) {}
+  constructor(public readonly descriptor: AndroidProviderDescriptor) { }
 
   get id(): string {
     return this.descriptor.id;
@@ -23,48 +23,64 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device is not authorized. Please check the screen of the device and allow USB debugging.");
     }
 
-    const path = request.location.path;
+    const directoryPath = request.location.path;
     try {
-      // Use adb shell ls -la to get directory listing
       const adbPath = await getAdbPath();
-      const { stdout } = await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "ls -la \\"${path}\\""`);
+      // Add trailing slash to force listing contents if it's a symlink (like /sdcard)
+      const normalizedPath = directoryPath.endsWith('/') ? directoryPath : `${directoryPath}/`;
+      const command = `${adbPath} -s ${this.descriptor.serial} shell "ls -la \"${normalizedPath}\""`;
+      
+      console.log(`Android Provider: Browsing "${normalizedPath}" on device ${this.descriptor.serial}`);
+      console.log(`Executing: ${command}`);
+
+      const { stdout } = await execAsync(command);
       const lines = stdout.split('\n').map(l => l.trim()).filter(Boolean);
-      
+      console.log(`Android Provider: Received ${lines.length} lines of output.`);
+
       const entries: FileEntry[] = [];
-      
+
       for (const line of lines) {
-        // Skip total block lines or errors
         if (line.startsWith('total ') || line.includes('No such file or directory')) continue;
         if (line.endsWith(' .') || line.endsWith(' ..')) continue;
-        
+
+        // Regex to match: drwxrwx--x 15 root sdcard_rw 4096 2024-04-12 10:45 Alarms
+        // or: -rw-rw---- 1 root sdcard_rw 12345 2024-04-12 10:45 file.txt
         const match = line.match(/^([d\-|l][rwx\-STst]{9})\s+\d+\s+\S+\s+\S+\s+(\d+)\s+(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\s+(.*)$/);
-        
+
         if (match) {
           const [, perms, size, dateStr, name] = match;
-          
           if (!request.includeHidden && name.startsWith('.')) continue;
-          
-          const isDir = perms.startsWith('d');
-          const isSymlink = perms.startsWith('l');
+
           const sizeBytes = parseInt(size, 10);
-          
+
+          const isSymlink = perms.startsWith('l');
           let actualName = name;
           if (isSymlink && name.includes(' -> ')) {
             actualName = name.split(' -> ')[0];
           }
 
-          const fullPath = path === '/' ? `/${actualName}` : `${path}/${actualName}`;
+          // If ls returns the full path (e.g. /sdcard), strip it to get just the name
+          if (actualName.startsWith('/')) {
+            actualName = actualName.substring(actualName.lastIndexOf('/') + 1);
+          }
+
+          if (!actualName || (actualName === 'sdcard' && directoryPath === '/sdcard')) continue;
+          
+          const isDirEntry = perms.startsWith('d') || (perms.startsWith('l') && !actualName.includes('.'));
+          
+          const normalizedDir = directoryPath.endsWith('/') && directoryPath !== '/' ? directoryPath.slice(0, -1) : directoryPath;
+          const fullPath = normalizedDir === '/' ? `/${actualName}` : `${normalizedDir}/${actualName}`;
           
           entries.push({
             name: actualName,
-            kind: isDir ? 'directory' : 'file',
+            kind: isDirEntry ? 'directory' : 'file',
             ref: {
               providerId: this.id,
               providerKind: this.kind,
               path: fullPath
             },
             metadata: {
-              sizeBytes: isDir ? undefined : sizeBytes,
+              sizeBytes: isDirEntry ? undefined : sizeBytes,
               modifiedAt: new Date(dateStr).toISOString(),
               isHidden: actualName.startsWith('.'),
               isReadOnly: false
@@ -76,6 +92,7 @@ export class AndroidAdbProvider implements StorageProvider {
           });
         }
       }
+      console.log(`Android Provider: Successfully parsed ${entries.length} entries.`);
 
       return {
         listing: {
@@ -99,6 +116,7 @@ export class AndroidAdbProvider implements StorageProvider {
         }
       };
     } catch (error: any) {
+      console.error(`Android Provider: Failed to browse ${directoryPath}:`, error);
       throw new Error(error.message || "Failed to browse Android device directory.");
     }
   }

@@ -71,12 +71,18 @@ export class DeviceService {
   }
 
   async browse(request: BrowseRequest): Promise<BrowseResult> {
-    if (!this.registry.has(request.location.providerId)) {
-      await this.refreshInventory();
-    }
+    try {
+      if (!this.registry.has(request.location.providerId)) {
+        console.log(`DeviceService: Provider ${request.location.providerId} not found in registry. Refreshing...`);
+        await this.refreshInventory();
+      }
 
-    const provider = this.registry.get(request.location.providerId);
-    return provider.browse(request);
+      const provider = this.registry.get(request.location.providerId);
+      return await provider.browse(request);
+    } catch (error) {
+      console.error(`DeviceService: Browse failed for provider ${request.location.providerId}:`, error);
+      throw error;
+    }
   }
 
   async analyze(request: StorageAnalysisRequest): Promise<StorageAnalysisResult> {

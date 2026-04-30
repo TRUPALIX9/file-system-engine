@@ -86,10 +86,16 @@ function mapFilesystemType(rawType: string): FilesystemType {
 }
 
 function providerIdForMountPath(mountPath: string): string {
+  if (mountPath === "/" || mountPath === "C:\\") {
+    return "root";
+  }
   return `desktop:${Buffer.from(mountPath).toString("base64url")}`;
 }
 
 export function providerIdForDesktopPath(path: string): string {
+  if (path === "/" || path === "C:\\") {
+    return "root";
+  }
   return `desktop:${Buffer.from(path).toString("base64url")}`;
 }
 

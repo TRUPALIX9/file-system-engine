@@ -15,7 +15,7 @@ import { Settings } from './components/Settings';
 import { StatusBar } from './components/StatusBar';
 import { SecurityDialog } from './components/SecurityDialog';
 import { BRAND, APP_NAME, ThemeMode } from './constants';
-import { FileEntry } from '@shared/types';
+import { FileEntry, StorageProviderDescriptor } from '@shared/types';
 
 // Error Boundary for stability
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -42,6 +42,7 @@ export function App(): ReactElement {
   const [focusedPane, setFocusedPane] = useState<"left" | "right">("left");
   const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<{ element: HTMLElement; entry: FileEntry } | null>(null);
+  const [isTransferring, setIsTransferring] = useState(false);
 
   const isDark = themeMode === "dark" || (themeMode === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   const isMac = (window as any).fileSystemEngine?.platform === 'darwin';
@@ -55,10 +56,10 @@ export function App(): ReactElement {
     setSelectedProviderIdRight,
     listing,
     listingRight,
-    selectedEntry,
-    setSelectedEntry,
-    selectedEntryRight,
-    setSelectedEntryRight,
+    selectedEntries,
+    setSelectedEntries,
+    selectedEntriesRight,
+    setSelectedEntriesRight,
     loadingLeft,
     loadingRight,
     error,
@@ -70,7 +71,8 @@ export function App(): ReactElement {
     pinnedFolders,
     browseProvider,
     togglePin,
-    refresh
+    refresh,
+    allProviders
   } = useFileSystem(isMac);
 
   const theme = useMemo(() => createTheme({
@@ -94,7 +96,7 @@ export function App(): ReactElement {
   // Sync startup
   React.useEffect(() => {
     if (!hasStartedUp && inventory && allDesktopProviders.length > 0) {
-      const systemProvider = allDesktopProviders.find(p => p.displayName === 'System' || p.id === 'root');
+      const systemProvider = allDesktopProviders.find(p => p.id === 'root');
       if (systemProvider) {
         setActiveTab("Explorer");
         setSelectedProviderId(systemProvider.id);
@@ -106,19 +108,25 @@ export function App(): ReactElement {
 
   const handleSelectProvider = async (p: any) => {
     setActiveTab("Explorer");
+    
+    // Determine the starting path. Desktop has mountPath, Android has roots.
+    const startPath = p.kind === 'android-adb' 
+      ? (p.roots?.[0]?.path || '/sdcard') 
+      : p.mountPath;
+
     if (focusedPane === 'left') {
       setSelectedProviderId(p.id);
-      setSelectedEntry(null);
-      await browseProvider(p, p.mountPath, 'left');
+      setSelectedEntries([]);
+      await browseProvider(p as StorageProviderDescriptor, startPath, 'left');
     } else {
       setSelectedProviderIdRight(p.id);
-      setSelectedEntryRight(null);
-      await browseProvider(p, p.mountPath, 'right');
+      setSelectedEntriesRight([]);
+      await browseProvider(p as StorageProviderDescriptor, startPath, 'right');
     }
   };
 
   const handleBrowsePinned = async (pin: any) => {
-    const provider = allDesktopProviders.find(p => p.id === pin.providerId);
+    const provider = allProviders.find(p => p.id === pin.providerId);
     if (provider) {
       setActiveTab("Explorer");
       if (focusedPane === 'left') {
@@ -135,48 +143,51 @@ export function App(): ReactElement {
     const sourcePane = focusedPane;
     const destPane = focusedPane === "left" ? "right" : "left";
 
-    const sourceEntry = sourcePane === "left" ? selectedEntry : selectedEntryRight;
-    const sourceProvider = sourcePane === "left" ? allDesktopProviders.find(p => p.id === selectedProviderId) : allDesktopProviders.find(p => p.id === selectedProviderIdRight);
-    const destProvider = destPane === "left" ? allDesktopProviders.find(p => p.id === selectedProviderId) : allDesktopProviders.find(p => p.id === selectedProviderIdRight);
+    const sourceEntries = sourcePane === "left" ? selectedEntries : selectedEntriesRight;
+    const sourceProvider = sourcePane === "left" ? allProviders.find(p => p.id === selectedProviderId) : allProviders.find(p => p.id === selectedProviderIdRight);
+    const destProvider = destPane === "left" ? allProviders.find(p => p.id === selectedProviderId) : allProviders.find(p => p.id === selectedProviderIdRight);
     const destListing = destPane === "left" ? listing : listingRight;
 
-    if (!sourceEntry || !sourceProvider || !destProvider || !destListing) {
-      setError("Please select a file and ensure both panes have a destination open.");
+    if (sourceEntries.length === 0 || !sourceProvider || !destProvider || !destListing) {
+      setError("Please select one or more files and ensure both panes have a folder open.");
       return;
     }
 
     const engine = (window as any).fileSystemEngine;
     if (!engine) return;
 
-    const destPath = destListing.directory.path === "/" ? `/${sourceEntry.name}` : `${destListing.directory.path}/${sourceEntry.name}`;
-    const operation = {
-      id: Math.random().toString(36).substring(7),
-      kind,
-      source: { providerId: sourceProvider.id, providerKind: "desktop-filesystem" as const, path: sourceEntry.ref.path },
-      destination: { providerId: destProvider.id, providerKind: "desktop-filesystem" as const, path: destPath }
-    };
+    const operations = sourceEntries.map(entry => {
+      const destPath = destListing.directory.path === "/" ? `/${entry.name}` : `${destListing.directory.path}/${entry.name}`;
+      return {
+        id: Math.random().toString(36).substring(7),
+        kind,
+        source: { providerId: sourceProvider.id, providerKind: sourceProvider.kind, path: entry.ref.path },
+        destination: { providerId: destProvider.id, providerKind: destProvider.kind, path: destPath }
+      };
+    });
 
-    if (destPane === "left") browseProvider(destProvider, destListing.directory.path, 'left'); // Placeholder trigger
-
+    setIsTransferring(true);
     const result = await engine.operations.executePlan({
       planId: Math.random().toString(36).substring(7),
-      operations: [operation],
+      operations,
       confirmed: true
     });
+    setIsTransferring(false);
 
     if (result.ok && result.data.status === "completed") {
       await browseProvider(destProvider, destListing.directory.path, destPane);
       if (kind === "move" && sourceProvider) {
-        const parentPath = sourceEntry.ref.path.substring(0, sourceEntry.ref.path.lastIndexOf('/')) || "/";
+        const parentPath = sourceEntries[0].ref.path.substring(0, sourceEntries[0].ref.path.lastIndexOf('/')) || "/";
         await browseProvider(sourceProvider, parentPath, sourcePane);
       }
+      if (sourcePane === 'left') setSelectedEntries([]); else setSelectedEntriesRight([]);
     } else {
       setError(result.error?.message || "Operation failed.");
     }
   }
 
-  const selectedProviderLeft = allDesktopProviders.find(p => p.id === selectedProviderId) || null;
-  const selectedProviderRightActual = allDesktopProviders.find(p => p.id === selectedProviderIdRight) || null;
+  const selectedProviderLeft = allProviders.find(p => p.id === selectedProviderId) || null;
+  const selectedProviderRightActual = allProviders.find(p => p.id === selectedProviderIdRight) || null;
 
   return (
     <ThemeProvider theme={theme}>
@@ -205,12 +216,12 @@ export function App(): ReactElement {
                 <FilePane
                   pane={focusedPane}
                   currentListing={focusedPane === 'left' ? listing : listingRight}
-                  currentProvider={focusedPane === 'left' ? selectedProviderLeft : selectedProviderRightActual}
-                  selectedEntry={focusedPane === 'left' ? selectedEntry : selectedEntryRight}
+                  currentProvider={focusedPane === 'left' ? (selectedProviderLeft as StorageProviderDescriptor | null) : (selectedProviderRightActual as StorageProviderDescriptor | null)}
+                  selectedEntries={focusedPane === 'left' ? selectedEntries : selectedEntriesRight}
                   loading={focusedPane === 'left' ? loadingLeft : loadingRight}
-                  onSelectEntry={(e) => focusedPane === 'left' ? setSelectedEntry(e) : setSelectedEntryRight(e)}
-                  onOpenEntry={(entry, p) => browseProvider(focusedPane === 'left' ? selectedProviderLeft! : selectedProviderRightActual!, entry.ref.path, p)}
-                  onNavigateTo={(path, p) => browseProvider(focusedPane === 'left' ? selectedProviderLeft! : selectedProviderRightActual!, path, p)}
+                  onSelectEntries={(e) => focusedPane === 'left' ? setSelectedEntries(e) : setSelectedEntriesRight(e)}
+                  onOpenEntry={(entry, p) => browseProvider((focusedPane === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, entry.ref.path, p)}
+                  onNavigateTo={(path, p) => browseProvider((focusedPane === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, path, p)}
                   onContextMenu={(e, entry) => setMenuAnchor({ element: e.currentTarget as HTMLElement, entry })}
                   onNewFolder={() => { }}
                   globalError={error}
@@ -225,18 +236,19 @@ export function App(): ReactElement {
                   setFocusedPane={setFocusedPane}
                   listing={listing}
                   listingRight={listingRight}
-                  selectedProvider={selectedProviderLeft}
-                  selectedProviderRight={selectedProviderRightActual}
-                  selectedEntry={selectedEntry}
-                  selectedEntryRight={selectedEntryRight}
+                  selectedProvider={selectedProviderLeft as StorageProviderDescriptor | null}
+                  selectedProviderRight={selectedProviderRightActual as StorageProviderDescriptor | null}
+                  selectedEntries={selectedEntries}
+                  selectedEntriesRight={selectedEntriesRight}
                   loadingLeft={loadingLeft}
                   loadingRight={loadingRight}
-                  onSelectEntry={(e, p) => p === 'left' ? setSelectedEntry(e) : setSelectedEntryRight(e)}
-                  onOpenEntry={(entry, p) => browseProvider(p === 'left' ? selectedProviderLeft! : selectedProviderRightActual!, entry.ref.path, p)}
-                  onNavigateTo={(path, p) => browseProvider(p === 'left' ? selectedProviderLeft! : selectedProviderRightActual!, path, p)}
+                  onSelectEntries={(e, p) => p === 'left' ? setSelectedEntries(e) : setSelectedEntriesRight(e)}
+                  onOpenEntry={(entry, p) => browseProvider((p === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, entry.ref.path, p)}
+                  onNavigateTo={(path, p) => browseProvider((p === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, path, p)}
                   onContextMenu={(e, entry) => setMenuAnchor({ element: e.currentTarget as HTMLElement, entry })}
                   onExecuteTransfer={executeTransfer}
                   globalError={error}
+                  isTransferring={isTransferring}
                 />
               )}
 
@@ -259,8 +271,8 @@ export function App(): ReactElement {
 
             <StatusBar
               focusedPane={focusedPane}
-              selectedEntry={selectedEntry}
-              selectedEntryRight={selectedEntryRight}
+              selectedEntries={selectedEntries}
+              selectedEntriesRight={selectedEntriesRight}
               listing={listing}
               listingRight={listingRight}
               appName={APP_NAME}

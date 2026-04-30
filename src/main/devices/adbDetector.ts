@@ -9,32 +9,35 @@ export async function detectAndroidDevices(): Promise<AndroidProviderDescriptor[
   try {
     const adbPath = await getAdbPath();
     const { stdout } = await execAsync(`${adbPath} devices -l`);
-    console.log(`ADB raw output: "${stdout.trim()}"`);
     const lines = stdout.split('\n').map(line => line.trim()).filter(Boolean);
     
     // First line is usually "List of devices attached"
     const devices: AndroidProviderDescriptor[] = [];
-    
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      if (line.startsWith('*')) continue; // Daemon starting messages
+
+    for (const line of lines) {
+      if (line.startsWith('*') || line.startsWith('List of')) continue; 
       
       const parts = line.split(/\s+/);
       if (parts.length < 2) continue;
+
+      const [serial, state] = parts;
       
-      const serial = parts[0];
-      const stateStr = parts[1];
+      // Parse additional info like model:SM_S928U1
+      const modelMatch = line.match(/model:(\S+)/);
+      const modelName = modelMatch ? modelMatch[1].replace(/_/g, ' ') : "Android Device";
+      
+      console.log(`[Android Detector] Found: ${serial} | Model: ${modelName} | Status: ${state}`);
       
       let transportState: AndroidTransportState = "unknown";
       let authorizationState: AndroidAuthorizationState = "unknown";
       
-      if (stateStr === 'device') {
+      if (state === 'device') {
         transportState = "device";
         authorizationState = "authorized";
-      } else if (stateStr === 'unauthorized') {
+      } else if (state === 'unauthorized') {
         transportState = "unauthorized";
         authorizationState = "unauthorized";
-      } else if (stateStr === 'offline') {
+      } else if (state === 'offline') {
         transportState = "offline";
         authorizationState = "offline";
       }
