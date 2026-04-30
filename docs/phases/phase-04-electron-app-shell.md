@@ -74,6 +74,7 @@ The project now has runnable shell scripts:
 - preload path pointed at the built preload bundle
 - external link opening through the OS browser only for `https://`
 - navigation blocking outside the current loaded page
+- production renderer build injects a restrictive Content Security Policy while dev preview stays compatible with Vite
 
 ### IPC Handler Stubs
 

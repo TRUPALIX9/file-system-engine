@@ -1,12 +1,31 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 
 const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 
+function productionCspPlugin(): PluginOption {
+  return {
+    name: "file-system-engine-production-csp",
+    apply: "build",
+    transformIndexHtml: {
+      order: "pre",
+      handler: (html) =>
+        html.replace(
+          "<head>",
+          `<head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';"
+    />`
+        )
+    }
+  };
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), productionCspPlugin()],
   root: ".",
   base: "./",
   resolve: {
