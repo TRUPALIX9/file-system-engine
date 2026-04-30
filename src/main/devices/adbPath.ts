@@ -2,7 +2,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { join } from "path";
 import { homedir } from "os";
-import { access } from "fs/promises";
+import { existsSync } from "fs";
 
 const execAsync = promisify(exec);
 
@@ -11,7 +11,24 @@ let cachedAdbPath: string | null = null;
 export async function getAdbPath(): Promise<string> {
   if (cachedAdbPath) return cachedAdbPath;
 
-  // 1. Try system PATH
+  // 1. Try common locations first (since system PATH is failing for the user)
+  const home = homedir();
+  const candidates = [
+    join(home, "Library", "Android", "sdk", "platform-tools", "adb"),
+    "/usr/local/bin/adb",
+    "/opt/homebrew/bin/adb",
+    join(process.env.LOCALAPPDATA || "", "Android", "Sdk", "platform-tools", "adb.exe"),
+  ];
+
+  for (const path of candidates) {
+    if (existsSync(path)) {
+      // Use quotes only if there are spaces
+      cachedAdbPath = path.includes(" ") ? `"${path}"` : path;
+      return cachedAdbPath;
+    }
+  }
+
+  // 2. Try system PATH as fallback
   try {
     await execAsync("adb version");
     cachedAdbPath = "adb";
@@ -20,24 +37,5 @@ export async function getAdbPath(): Promise<string> {
     // Not in PATH
   }
 
-  // 2. Try common locations
-  const commonPaths = [
-    join(homedir(), "Library", "Android", "sdk", "platform-tools", "adb"), // macOS SDK
-    "/usr/local/bin/adb",
-    "/opt/homebrew/bin/adb",
-    join(process.env.LOCALAPPDATA || "", "Android", "Sdk", "platform-tools", "adb.exe"), // Windows SDK
-  ];
-
-  for (const path of commonPaths) {
-    try {
-      await access(path);
-      cachedAdbPath = `"${path}"`; // Quote in case of spaces
-      return cachedAdbPath;
-    } catch {
-      // Not found at this path
-    }
-  }
-
-  // Fallback to "adb" and hope for the best
   return "adb";
 }
