@@ -12,7 +12,10 @@ The product deliberately treats Android phones as a separate device class instea
 - Phase 4: Electron App Shell - complete
 - Phase 5: Preload and IPC Contracts - complete
 - Phase 6: Desktop Drive Detection and Filesystem Support - complete
-- Next: Phase 7 - Writable Detection and NTFS Driver Assist
+- Phase 7: Writable Detection and NTFS Driver Assist - complete
+- Phase 8: Desktop File Operations - complete
+- Storage Analyzer v1 - complete
+- Next: Phase 9 - Android Device Integration via ADB
 
 ## Key Rules
 
@@ -31,6 +34,7 @@ The product deliberately treats Android phones as a separate device class instea
 - [Phase 3 - Folder Structure and Shared Types](docs/phases/phase-03-folder-structure-shared-types.md)
 - [Phase 4 - Electron App Shell](docs/phases/phase-04-electron-app-shell.md)
 - [Phase 5 and 6 - IPC Contracts and Desktop Filesystems](docs/phases/phase-05-06-ipc-contracts-desktop-filesystems.md)
+- [Phase 7, 8, and Storage Analyzer](docs/phases/phase-07-08-storage-analyzer.md)
 - [Agent Markdown Pack](agents/)
 
 ## Development
@@ -55,6 +59,15 @@ Run the Electron shell:
 ```sh
 npm run dev
 ```
+
+Run the production-built Electron shell:
+
+```sh
+npm run build
+npm run start
+```
+
+The Vite browser preview at `http://127.0.0.1:5173/` is useful for UI work, but real drive detection, file operations, macOS tags, and NTFS driver assist require Electron because they run through the main process.
 
 GitHub CI runs `npm ci`, `npm run build`, and `npm audit --audit-level=high`.
 It also runs `npm run test` for contract validation tests.

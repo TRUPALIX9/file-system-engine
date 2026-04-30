@@ -25,6 +25,16 @@ export const browseRequestSchema = z
   })
   .strict();
 
+export const storageAnalysisRequestSchema = z
+  .object({
+    root: storagePathRefSchema,
+    includeHidden: z.boolean(),
+    maxEntries: z.number().int().min(1).max(250000),
+    maxDepth: z.number().int().min(0).max(64),
+    query: z.string().max(256).optional()
+  })
+  .strict();
+
 export const scanOptionsSchema = z
   .object({
     includeHidden: z.boolean(),
@@ -81,18 +91,129 @@ export const aiTaskRequestSchema = z
 export const executeOperationPlanRequestSchema = z
   .object({
     planId: z.string().min(1).max(256),
+    operations: z
+      .array(
+        z.discriminatedUnion("kind", [
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("copy"),
+              source: storagePathRefSchema,
+              destination: storagePathRefSchema,
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("move"),
+              source: storagePathRefSchema,
+              destination: storagePathRefSchema,
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("rename"),
+              source: storagePathRefSchema,
+              newName: z.string().min(1).max(255),
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("delete"),
+              source: storagePathRefSchema,
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("create-folder"),
+              destination: storagePathRefSchema,
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("create-file"),
+              destination: storagePathRefSchema,
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("set-tags"),
+              source: storagePathRefSchema,
+              tags: z.array(z.string().min(1).max(128)).max(32),
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("pull-from-android"),
+              source: storagePathRefSchema,
+              destination: storagePathRefSchema,
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict(),
+          z
+            .object({
+              id: z.string().min(1).max(256),
+              kind: z.literal("push-to-android"),
+              source: storagePathRefSchema,
+              destination: storagePathRefSchema,
+              destructive: z.boolean(),
+              requiresConfirmation: z.boolean(),
+              reason: z.string().max(512).optional()
+            })
+            .strict()
+        ])
+      )
+      .min(1)
+      .max(500),
     confirmed: z.boolean()
+  })
+  .strict();
+
+export const openExternalRequestSchema = z
+  .object({
+    url: z.string().url().max(2048).startsWith("https://")
   })
   .strict();
 
 export const ipcRequestSchemas = {
   [IPC_CHANNELS.devicesList]: z.undefined(),
   [IPC_CHANNELS.browse]: browseRequestSchema,
+  [IPC_CHANNELS.analyzeStorage]: storageAnalysisRequestSchema,
   [IPC_CHANNELS.scanStart]: startScanRequestSchema,
   [IPC_CHANNELS.scanGet]: getScanRequestSchema,
   [IPC_CHANNELS.duplicatesFind]: findDuplicatesRequestSchema,
   [IPC_CHANNELS.aiStatus]: z.undefined(),
   [IPC_CHANNELS.aiRunTask]: aiTaskRequestSchema,
+  [IPC_CHANNELS.appOpenExternal]: openExternalRequestSchema,
   [IPC_CHANNELS.operationsExecutePlan]: executeOperationPlanRequestSchema
 } as const;
 

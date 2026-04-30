@@ -18,6 +18,7 @@ export interface FileMetadata {
   sizeBytes?: ByteSize;
   mimeType?: string;
   extension?: string;
+  tags?: string[];
   isHidden: boolean;
   isReadOnly: boolean;
 }
@@ -49,4 +50,3 @@ export interface BrowseRequest {
 export interface BrowseResult {
   listing: DirectoryListing;
 }
-

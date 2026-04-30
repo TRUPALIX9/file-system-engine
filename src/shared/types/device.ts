@@ -45,8 +45,8 @@ export type StorageDeviceSummary = MountedDeviceSummary | AndroidDeviceSummary;
 
 export interface DeviceInventory {
   mountedFilesystems: MountedFilesystemDescriptor[];
+  knownFolders: MountedFilesystemDescriptor[];
   androidDevices: AndroidProviderDescriptor[];
   allProviders: StorageProviderDescriptor[];
   refreshedAt: ISODateTime;
 }
-

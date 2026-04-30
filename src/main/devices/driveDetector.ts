@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { constants } from "node:fs";
-import { access, readdir, statfs } from "node:fs/promises";
-import { basename, parse } from "node:path";
+import { access, readdir, statfs, unlink, writeFile } from "node:fs/promises";
+import { basename, join, parse } from "node:path";
 import { promisify } from "node:util";
 import { PRODUCT_COPY } from "@shared/constants/app";
 import type {
@@ -89,6 +89,10 @@ function providerIdForMountPath(mountPath: string): string {
   return `desktop:${Buffer.from(mountPath).toString("base64url")}`;
 }
 
+export function providerIdForDesktopPath(path: string): string {
+  return `desktop:${Buffer.from(path).toString("base64url")}`;
+}
+
 function displayNameForMount(record: MountRecord): string {
   if (record.mountPath === "/") {
     return "System Volume";
@@ -101,22 +105,61 @@ function displayNameForMount(record: MountRecord): string {
   return basename(record.mountPath) || record.source || record.mountPath;
 }
 
-async function canAccessForWrite(path: string): Promise<WritableProbeResult> {
+async function probeWritable(path: string, allowTempWriteTest: boolean): Promise<WritableProbeResult> {
   const checkedAt = new Date().toISOString();
+  let accessWritable = false;
 
   try {
     await access(path, constants.W_OK);
-
-    return {
-      checkedAt,
-      writable: true,
-      method: "access-check"
-    };
+    accessWritable = true;
   } catch (error) {
     return {
       checkedAt,
       writable: false,
       method: "access-check",
+      accessWritable,
+      errorMessage: error instanceof Error ? error.message : undefined
+    };
+  }
+
+  if (!allowTempWriteTest) {
+    return {
+      checkedAt,
+      writable: true,
+      method: "access-check",
+      accessWritable
+    };
+  }
+
+  const probePath = join(
+    path,
+    `.file-system-engine-write-test-${process.pid}-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}`
+  );
+
+  try {
+    await writeFile(probePath, "File System Engine write probe\n", { flag: "wx" });
+    await unlink(probePath);
+
+    return {
+      checkedAt,
+      writable: true,
+      method: "temp-write-test",
+      accessWritable
+    };
+  } catch (error) {
+    try {
+      await unlink(probePath);
+    } catch {
+      // Cleanup is best effort; the probe file name is app-specific and unique.
+    }
+
+    return {
+      checkedAt,
+      writable: false,
+      method: "temp-write-test",
+      accessWritable,
       errorMessage: error instanceof Error ? error.message : undefined
     };
   }
@@ -257,7 +300,7 @@ export async function detectMountedFilesystems(): Promise<MountedFilesystemDescr
     records.map(async (record) => {
       const [usage, writableProbe] = await Promise.all([
         usageForPath(record.mountPath),
-        canAccessForWrite(record.mountPath)
+        probeWritable(record.mountPath, !record.isSystemVolume)
       ]);
       const warnings = warningsFor(record, writableProbe.writable);
       const capabilities = writableProbe.writable
@@ -282,4 +325,42 @@ export async function detectMountedFilesystems(): Promise<MountedFilesystemDescr
       } satisfies MountedFilesystemDescriptor;
     })
   );
+}
+
+export async function describeDesktopPath(
+  path: string,
+  displayName: string,
+  isSystemVolume = false
+): Promise<MountedFilesystemDescriptor> {
+  const platform = getDesktopPlatform();
+  const [usage, writableProbe] = await Promise.all([
+    usageForPath(path),
+    probeWritable(path, !isSystemVolume)
+  ]);
+  const record: MountRecord = {
+    source: path,
+    mountPath: path,
+    rawFilesystemType: "unknown",
+    filesystemType: "unknown",
+    isRemovable: false,
+    isSystemVolume
+  };
+  const warnings = warningsFor(record, writableProbe.writable);
+
+  return {
+    id: providerIdForDesktopPath(path),
+    kind: "desktop-filesystem",
+    displayName,
+    accessState: writableProbe.writable ? "available" : "read-only",
+    capabilities: writableProbe.writable ? WRITABLE_TRUE_CAPABILITIES : WRITABLE_FALSE_CAPABILITIES,
+    warnings,
+    platform,
+    lastSeenAt: new Date().toISOString(),
+    mountPath: path,
+    filesystemType: "unknown",
+    isRemovable: false,
+    isSystemVolume,
+    usage,
+    writableProbe
+  };
 }

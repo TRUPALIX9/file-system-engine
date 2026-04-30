@@ -8,6 +8,7 @@ const browserPreviewApi: FileSystemEngineApi = {
       ok: true,
       data: {
         mountedFilesystems: [],
+        knownFolders: [],
         androidDevices: [],
         allProviders: [],
         refreshedAt: now()
@@ -34,6 +35,23 @@ const browserPreviewApi: FileSystemEngineApi = {
           },
           listedAt: now()
         }
+      }
+    }),
+    analyze: async (request) => ({
+      ok: true,
+      data: {
+        root: request.root,
+        scannedAt: now(),
+        totalBytes: 0,
+        fileCount: 0,
+        directoryCount: 0,
+        truncated: false,
+        largestFiles: [],
+        smallestFiles: [],
+        largestDirectories: [],
+        extensionBreakdown: [],
+        redundantCandidates: [],
+        treemapItems: []
       }
     })
   },
@@ -107,6 +125,14 @@ const browserPreviewApi: FileSystemEngineApi = {
       }
     })
   },
+  app: {
+    openExternal: async () => ({
+      ok: true,
+      data: {
+        opened: true
+      }
+    })
+  },
   operations: {
     executePlan: async (request) => ({
       ok: true,
@@ -122,4 +148,3 @@ const browserPreviewApi: FileSystemEngineApi = {
 export function getFileSystemEngineApi(): FileSystemEngineApi {
   return window.fileSystemEngine ?? browserPreviewApi;
 }
-

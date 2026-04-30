@@ -116,10 +116,10 @@ export interface WritableProbeResult {
   checkedAt: ISODateTime;
   writable: boolean;
   method: "access-check" | "temp-write-test" | "provider-reported";
+  accessWritable?: boolean;
   errorMessage?: string;
 }
 
 export type StorageProviderDescriptor =
   | MountedFilesystemDescriptor
   | AndroidProviderDescriptor;
-

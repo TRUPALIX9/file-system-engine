@@ -1,6 +1,8 @@
 import type {
   AiTaskRequest,
   AiTaskResult,
+  StorageAnalysisRequest,
+  StorageAnalysisResult,
   BrowseRequest,
   BrowseResult,
   DeviceInventory,
@@ -38,6 +40,7 @@ export interface FileSystemEngineApi {
   };
   storage: {
     browse: (request: BrowseRequest) => Promise<IpcResult<BrowseResult>>;
+    analyze: (request: StorageAnalysisRequest) => Promise<IpcResult<StorageAnalysisResult>>;
   };
   scans: {
     start: (request: StartScanRequest) => Promise<IpcResult<StartScanResult>>;
@@ -50,11 +53,22 @@ export interface FileSystemEngineApi {
     status: () => Promise<IpcResult<LlmProviderStatus>>;
     runTask: (request: AiTaskRequest) => Promise<IpcResult<AiTaskResult>>;
   };
+  app: {
+    openExternal: (request: OpenExternalRequest) => Promise<IpcResult<OpenExternalResult>>;
+  };
   operations: {
     executePlan: (
       request: ExecuteOperationPlanRequest
     ) => Promise<IpcResult<ExecuteOperationPlanResult>>;
   };
+}
+
+export interface OpenExternalRequest {
+  url: string;
+}
+
+export interface OpenExternalResult {
+  opened: true;
 }
 
 export interface IpcContractMap {
@@ -65,6 +79,10 @@ export interface IpcContractMap {
   "storage:browse": {
     request: BrowseRequest;
     response: BrowseResult;
+  };
+  "storage:analyze": {
+    request: StorageAnalysisRequest;
+    response: StorageAnalysisResult;
   };
   "scan:start": {
     request: StartScanRequest;
@@ -85,6 +103,10 @@ export interface IpcContractMap {
   "ai:run-task": {
     request: AiTaskRequest;
     response: AiTaskResult;
+  };
+  "app:open-external": {
+    request: OpenExternalRequest;
+    response: OpenExternalResult;
   };
   "operations:execute-plan": {
     request: ExecuteOperationPlanRequest;

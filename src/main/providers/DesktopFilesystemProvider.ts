@@ -11,6 +11,7 @@ import type {
 } from "@shared/types";
 import { AppError } from "@main/app/AppError";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
+import { readMacOsTags } from "@main/storage/macTags";
 import type { StorageProvider } from "./StorageProvider";
 
 function kindForDirent(dirent: { isDirectory: () => boolean; isFile: () => boolean; isSymbolicLink: () => boolean }): FileEntryKind {
@@ -97,7 +98,11 @@ export class DesktopFilesystemProvider implements StorageProvider {
         .filter((dirent) => request.includeHidden || !dirent.name.startsWith("."))
         .map(async (dirent): Promise<FileEntry> => {
           const absolutePath = join(directoryPath, dirent.name);
-          const [stats, writable] = await Promise.all([lstat(absolutePath), canWrite(absolutePath)]);
+          const [stats, writable, tags] = await Promise.all([
+            lstat(absolutePath),
+            canWrite(absolutePath),
+            readMacOsTags(absolutePath)
+          ]);
           const kind = kindForDirent(dirent);
 
           return {
@@ -114,6 +119,7 @@ export class DesktopFilesystemProvider implements StorageProvider {
               accessedAt: stats.atime.toISOString(),
               sizeBytes: stats.isFile() ? stats.size : undefined,
               extension: stats.isFile() ? extname(dirent.name).toLowerCase() : undefined,
+              tags,
               isHidden: dirent.name.startsWith("."),
               isReadOnly: !writable
             },

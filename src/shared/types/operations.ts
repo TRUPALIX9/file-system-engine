@@ -8,6 +8,7 @@ export type FileOperationKind =
   | "delete"
   | "create-folder"
   | "create-file"
+  | "set-tags"
   | "pull-from-android"
   | "push-to-android";
 
@@ -59,6 +60,12 @@ export interface CreateFileOperation extends BaseFileOperation {
   destination: StoragePathRef;
 }
 
+export interface SetTagsOperation extends BaseFileOperation {
+  kind: "set-tags";
+  source: StoragePathRef;
+  tags: string[];
+}
+
 export interface PullFromAndroidOperation extends BaseFileOperation {
   kind: "pull-from-android";
   source: StoragePathRef;
@@ -78,6 +85,7 @@ export type FileOperation =
   | DeleteOperation
   | CreateFolderOperation
   | CreateFileOperation
+  | SetTagsOperation
   | PullFromAndroidOperation
   | PushToAndroidOperation;
 
@@ -91,6 +99,7 @@ export interface FileOperationPlan {
 
 export interface ExecuteOperationPlanRequest {
   planId: string;
+  operations: FileOperation[];
   confirmed: boolean;
 }
 

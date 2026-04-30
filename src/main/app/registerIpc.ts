@@ -1,4 +1,4 @@
-import { ipcMain } from "electron";
+import { ipcMain, shell } from "electron";
 import { randomUUID } from "node:crypto";
 import { IPC_CHANNELS, type IpcContractMap } from "@shared/ipc";
 import {
@@ -37,6 +37,8 @@ export function registerIpcHandlers(): void {
   handle(IPC_CHANNELS.devicesList, () => deviceService.refreshInventory());
 
   handle(IPC_CHANNELS.browse, (request) => deviceService.browse(request));
+
+  handle(IPC_CHANNELS.analyzeStorage, (request) => deviceService.analyze(request));
 
   handle(IPC_CHANNELS.scanStart, (request): StartScanResult => {
     const now = new Date().toISOString();
@@ -96,9 +98,15 @@ export function registerIpcHandlers(): void {
     errorMessage: "AI task execution is not implemented until the AI layer phase."
   }));
 
-  handle(IPC_CHANNELS.operationsExecutePlan, (request): ExecuteOperationPlanResult => ({
-    planId: request.planId,
-    status: request.confirmed ? "failed" : "awaiting-confirmation",
-    logs: []
-  }));
+  handle(IPC_CHANNELS.appOpenExternal, async (request) => {
+    await shell.openExternal(request.url);
+
+    return {
+      opened: true
+    } as const;
+  });
+
+  handle(IPC_CHANNELS.operationsExecutePlan, (request): Promise<ExecuteOperationPlanResult> =>
+    deviceService.executeOperationPlan(request)
+  );
 }

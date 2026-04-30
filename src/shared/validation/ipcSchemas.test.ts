@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { IPC_CHANNELS } from "@shared/ipc";
-import { browseRequestSchema, ipcRequestSchemas } from "./ipcSchemas";
+import { browseRequestSchema, executeOperationPlanRequestSchema, ipcRequestSchemas } from "./ipcSchemas";
 
 describe("ipc request schemas", () => {
   it("accepts a desktop browse request", () => {
@@ -31,5 +31,22 @@ describe("ipc request schemas", () => {
 
   it("keeps every declared IPC channel covered by a schema", () => {
     expect(Object.keys(ipcRequestSchemas).sort()).toEqual(Object.values(IPC_CHANNELS).sort());
+  });
+
+  it("rejects a delete operation without an explicit source", () => {
+    const result = executeOperationPlanRequestSchema.safeParse({
+      planId: "cleanup",
+      confirmed: true,
+      operations: [
+        {
+          id: "delete-1",
+          kind: "delete",
+          destructive: true,
+          requiresConfirmation: true
+        }
+      ]
+    });
+
+    expect(result.success).toBe(false);
   });
 });
