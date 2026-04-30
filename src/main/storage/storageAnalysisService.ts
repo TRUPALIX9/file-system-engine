@@ -16,6 +16,7 @@ import { AppError } from "@main/app/AppError";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
 import type { AndroidProviderDescriptor } from "@shared/types";
+import { getAdbPath } from "@main/devices/adbPath";
 
 const execAsync = promisify(exec);
 
@@ -214,7 +215,8 @@ export class StorageAnalysisService {
 
     try {
       // Use adb shell ls -lR for recursive listing
-      const { stdout } = await execAsync(`adb -s ${descriptor.serial} shell "ls -lR \\"${rootPath}\\""`);
+      const adbPath = await getAdbPath();
+      const { stdout } = await execAsync(`${adbPath} -s ${descriptor.serial} shell "ls -lR \\"${rootPath}\\""`);
       const blocks = stdout.split('\n\n');
       
       for (const block of blocks) {

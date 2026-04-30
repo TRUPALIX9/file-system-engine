@@ -14,7 +14,10 @@ const browserPreviewApi: FileSystemEngineApi = {
         allProviders: [],
         refreshedAt: now()
       }
-    })
+    }),
+    onUpdated: () => {
+      return () => {};
+    }
   },
   storage: {
     browse: async (request) => ({

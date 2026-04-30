@@ -40,6 +40,7 @@ export interface FileSystemEngineApi {
   platform: string;
   devices: {
     list: () => Promise<IpcResult<DeviceInventory>>;
+    onUpdated: (callback: (inventory: DeviceInventory) => void) => () => void;
   };
   storage: {
     browse: (request: BrowseRequest) => Promise<IpcResult<BrowseResult>>;

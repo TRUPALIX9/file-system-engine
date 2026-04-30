@@ -17,6 +17,7 @@ import { DesktopFilesystemProvider } from "@main/providers/DesktopFilesystemProv
 import { AndroidAdbProvider } from "@main/providers/AndroidAdbProvider";
 import { AppError } from "@main/app/AppError";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
+import { getAdbPath } from "@main/devices/adbPath";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
 import { setMacOsTags } from "@main/storage/macTags";
 
@@ -278,7 +279,8 @@ export class FileOperationService {
 
         if (provider.kind === "android-adb") {
           // No easy way to create empty file via ADB without shell, just touch it
-          await execAsync(`adb -s ${(provider as AndroidAdbProvider).descriptor.serial} shell "touch \\"${destRef.path}\\""`);
+          const adbPath = await getAdbPath();
+          await execAsync(`${adbPath} -s ${(provider as AndroidAdbProvider).descriptor.serial} shell "touch \\"${destRef.path}\\""`);
           return;
         }
 

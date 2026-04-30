@@ -1,4 +1,4 @@
-import { ipcMain, shell } from "electron";
+import { ipcMain, shell, BrowserWindow } from "electron";
 import { randomUUID } from "node:crypto";
 import { IPC_CHANNELS, type IpcContractMap } from "@shared/ipc";
 import {
@@ -127,4 +127,18 @@ export function registerIpcHandlers(): void {
   handle(IPC_CHANNELS.recordsGet, async (request) => {
     return recordsService.getRecords(request);
   });
+
+  // Start periodic inventory refresh (every 10 seconds)
+  setInterval(async () => {
+    try {
+      const inventory = await deviceService.refreshInventory();
+      BrowserWindow.getAllWindows().forEach((window) => {
+        if (!window.isDestroyed()) {
+          window.webContents.send(IPC_CHANNELS.devicesUpdated, ok(inventory));
+        }
+      });
+    } catch (error) {
+      console.error("Periodic inventory refresh failed:", error);
+    }
+  }, 10000);
 }

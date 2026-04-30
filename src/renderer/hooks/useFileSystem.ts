@@ -97,6 +97,13 @@ export function useFileSystem(isMac: boolean) {
 
   useEffect(() => {
     void refresh();
+
+    const engine = (window as any).fileSystemEngine;
+    if (engine?.devices?.onUpdated) {
+      return engine.devices.onUpdated((newInventory: DeviceInventory) => {
+        setInventory(newInventory);
+      });
+    }
   }, [refresh]);
 
   const togglePin = (entry: FileEntry, providerId: string) => {

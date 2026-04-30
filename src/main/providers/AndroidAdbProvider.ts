@@ -3,6 +3,7 @@ import { promisify } from "util";
 import { posix } from "path";
 import type { StorageProvider } from "./StorageProvider";
 import type { BrowseRequest, BrowseResult, FileEntry, AndroidProviderDescriptor } from "@shared/types";
+import { getAdbPath } from "../devices/adbPath";
 
 const execAsync = promisify(exec);
 
@@ -25,7 +26,8 @@ export class AndroidAdbProvider implements StorageProvider {
     const path = request.location.path;
     try {
       // Use adb shell ls -la to get directory listing
-      const { stdout } = await execAsync(`adb -s ${this.descriptor.serial} shell "ls -la \\"${path}\\""`);
+      const adbPath = await getAdbPath();
+      const { stdout } = await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "ls -la \\"${path}\\""`);
       const lines = stdout.split('\n').map(l => l.trim()).filter(Boolean);
       
       const entries: FileEntry[] = [];
@@ -106,7 +108,8 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for pull.");
     }
     try {
-      await execAsync(`adb -s ${this.descriptor.serial} pull "${androidPath}" "${localPath}"`);
+      const adbPath = await getAdbPath();
+      await execAsync(`${adbPath} -s ${this.descriptor.serial} pull "${androidPath}" "${localPath}"`);
     } catch (error: any) {
       throw new Error(`ADB pull failed: ${error.message}`);
     }
@@ -117,7 +120,8 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for push.");
     }
     try {
-      await execAsync(`adb -s ${this.descriptor.serial} push "${localPath}" "${androidPath}"`);
+      const adbPath = await getAdbPath();
+      await execAsync(`${adbPath} -s ${this.descriptor.serial} push "${localPath}" "${androidPath}"`);
     } catch (error: any) {
       throw new Error(`ADB push failed: ${error.message}`);
     }
@@ -128,7 +132,8 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for delete.");
     }
     try {
-      await execAsync(`adb -s ${this.descriptor.serial} shell "rm -rf \\"${androidPath}\\""`);
+      const adbPath = await getAdbPath();
+      await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "rm -rf \\"${androidPath}\\""`);
     } catch (error: any) {
       throw new Error(`ADB delete failed: ${error.message}`);
     }
@@ -139,7 +144,8 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for rename.");
     }
     try {
-      await execAsync(`adb -s ${this.descriptor.serial} shell "mv \\"${oldPath}\\" \\"${newPath}\\""`);
+      const adbPath = await getAdbPath();
+      await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "mv \\"${oldPath}\\" \\"${newPath}\\""`);
     } catch (error: any) {
       throw new Error(`ADB rename failed: ${error.message}`);
     }
@@ -150,7 +156,8 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for directory creation.");
     }
     try {
-      await execAsync(`adb -s ${this.descriptor.serial} shell "mkdir -p \\"${androidPath}\\""`);
+      const adbPath = await getAdbPath();
+      await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "mkdir -p \\"${androidPath}\\""`);
     } catch (error: any) {
       throw new Error(`ADB mkdir failed: ${error.message}`);
     }

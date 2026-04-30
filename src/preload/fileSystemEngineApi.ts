@@ -29,7 +29,18 @@ async function invoke<TResponse>(channel: IpcChannel, request?: unknown): Promis
 export const fileSystemEngineApi: FileSystemEngineApi = {
   platform: process.platform,
   devices: {
-    list: () => invoke<DeviceInventory>(IPC_CHANNELS.devicesList)
+    list: () => invoke<DeviceInventory>(IPC_CHANNELS.devicesList),
+    onUpdated: (callback: (inventory: DeviceInventory) => void) => {
+      const listener = (_event: any, result: IpcResult<DeviceInventory>) => {
+        if (result.ok) {
+          callback(result.data);
+        }
+      };
+      ipcRenderer.on(IPC_CHANNELS.devicesUpdated, listener);
+      return () => {
+        ipcRenderer.removeListener(IPC_CHANNELS.devicesUpdated, listener);
+      };
+    }
   },
   storage: {
     browse: (request: BrowseRequest) => invoke<BrowseResult>(IPC_CHANNELS.browse, request),

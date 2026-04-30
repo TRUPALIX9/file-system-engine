@@ -10,7 +10,8 @@ export const IPC_CHANNELS = {
   appOpenExternal: "app:open-external",
   operationsExecutePlan: "operations:execute-plan",
   recordsGet: "records:get",
-  appShowOpenDialog: "app:show-open-dialog"
+  appShowOpenDialog: "app:show-open-dialog",
+  devicesUpdated: "devices:updated"
 } as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
