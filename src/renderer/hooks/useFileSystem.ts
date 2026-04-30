@@ -51,21 +51,29 @@ export function useFileSystem(isMac: boolean) {
     const engine = (window as any).fileSystemEngine;
     if (!engine) return;
 
-    if (pane === "left") setLoadingLeft(true); else setLoadingRight(true);
+    if (pane === 'left') setLoadingLeft(true); else setLoadingRight(true);
     setError(null);
 
-    const result = await engine.storage.browse({ 
-      location: { providerId: provider.id, providerKind: provider.kind, path },
-      includeHidden: false 
-    });
+    // Safety: Ensure path is a string and not empty for IPC validation
+    const safePath = (typeof path === 'string' && path.length > 0) ? path : '/';
 
-    if (pane === "left") setLoadingLeft(false); else setLoadingRight(false);
+    try {
+      const result = await engine.storage.browse({ 
+        location: { providerId: provider.id, providerKind: provider.kind, path: safePath },
+        includeHidden: false 
+      });
 
-    if (result.ok) {
-      if (pane === "left") setListing(result.data.listing);
-      else setListingRight(result.data.listing);
-    } else {
-      setError(result.error.message);
+      if (pane === 'left') setLoadingLeft(false); else setLoadingRight(false);
+
+      if (result.ok) {
+        if (pane === 'left') setListing(result.data.listing);
+        else setListingRight(result.data.listing);
+      } else {
+        setError(result.error.message);
+      }
+    } catch (e: any) {
+      if (pane === 'left') setLoadingLeft(false); else setLoadingRight(false);
+      setError(e.message || "Failed to browse location");
     }
   }, []);
 

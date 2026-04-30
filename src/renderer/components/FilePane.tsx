@@ -2,7 +2,8 @@ import React from 'react';
 import { 
   Box, Typography, IconButton, Button, Table, TableBody, 
   TableCell, TableContainer, TableHead, TableRow, alpha, 
-  Breadcrumbs, Link, styled, useTheme, Fade, CircularProgress
+  Breadcrumbs, Link, styled, useTheme, Fade, CircularProgress,
+  Divider
 } from '@mui/material';
 import {
   ChevronRight as ChevronRightIcon,
@@ -102,17 +103,19 @@ export const FilePane: React.FC<FilePaneProps> = ({
     return (
       <Breadcrumbs separator={<ChevronRightIcon sx={{ fontSize: 14 }} />} sx={{ ml: 1 }}>
         {crumbs.map((crumb, idx) => (
-          <Link
+          <Typography
             key={crumb.path}
-            component="button"
             variant="caption"
-            underline="hover"
-            color={idx === crumbs.length - 1 ? "text.primary" : "inherit"}
-            sx={{ fontWeight: idx === crumbs.length - 1 ? 700 : 400 }}
+            sx={{ 
+              cursor: 'pointer',
+              fontWeight: idx === crumbs.length - 1 ? 700 : 400,
+              color: idx === crumbs.length - 1 ? "text.primary" : "text.secondary",
+              '&:hover': { color: 'primary.main', textDecoration: 'underline' }
+            }}
             onClick={(e: any) => { e.stopPropagation(); onNavigateTo(crumb.path, pane); }}
           >
             {crumb.name}
-          </Link>
+          </Typography>
         ))}
       </Breadcrumbs>
     );
@@ -138,27 +141,25 @@ export const FilePane: React.FC<FilePaneProps> = ({
         alignItems: 'center',
         bgcolor: 'background.paper'
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="overline" sx={{ fontWeight: 800, color: 'text.disabled', letterSpacing: 1 }}>
-            Select Folder
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <IconButton size="small" onClick={() => onNavigateTo("..", pane)} disabled={!currentListing}>
             <CustomIcon name="up" size={18} />
           </IconButton>
         </Box>
+        <Divider orientation="vertical" flexItem sx={{ mx: 1, height: 16, my: 'auto' }} />
         {renderBreadcrumbs()}
         <Box sx={{ flex: 1 }} />
         <IconButton 
           size="small" 
           color="primary"
-          disabled={true} 
+          disabled={!currentProvider?.capabilities.canCreateFolder} 
           onClick={onNewFolder}
           sx={{ 
             bgcolor: alpha(theme.palette.primary.main, 0.1),
             '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
           }}
         >
-          <CustomIcon name="create-folder" size={20} />
+          <CustomIcon name="folder-plus" size={18} />
         </IconButton>
       </Box>
 

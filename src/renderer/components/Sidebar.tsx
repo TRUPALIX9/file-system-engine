@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           overflow: 'hidden'
         }}>
           <img 
-            src="/logos/fse-app-icon-small.svg" 
+            src="logos/fse-app-icon-small.svg" 
             alt="Logo" 
             style={{ width: 22, height: 22, objectFit: 'contain' }} 
           />

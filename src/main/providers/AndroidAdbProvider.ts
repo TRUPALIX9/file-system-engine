@@ -1,11 +1,11 @@
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { posix } from "path";
 import type { StorageProvider } from "./StorageProvider";
 import type { BrowseRequest, BrowseResult, FileEntry, AndroidProviderDescriptor } from "@shared/types";
 import { getAdbPath } from "../devices/adbPath";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export class AndroidAdbProvider implements StorageProvider {
   constructor(public readonly descriptor: AndroidProviderDescriptor) { }
@@ -28,12 +28,15 @@ export class AndroidAdbProvider implements StorageProvider {
       const adbPath = await getAdbPath();
       // Add trailing slash to force listing contents if it's a symlink (like /sdcard)
       const normalizedPath = directoryPath.endsWith('/') ? directoryPath : `${directoryPath}/`;
-      const command = `${adbPath} -s ${this.descriptor.serial} shell "ls -la \"${normalizedPath}\""`;
       
       console.log(`Android Provider: Browsing "${normalizedPath}" on device ${this.descriptor.serial}`);
-      console.log(`Executing: ${command}`);
-
-      const { stdout } = await execAsync(command);
+      
+      // Use execFile with array of arguments to avoid shell injection and escaping issues
+      const { stdout } = await execFileAsync(adbPath, [
+        "-s", this.descriptor.serial, 
+        "shell", `ls -la "${normalizedPath}"`
+      ]);
+      
       const lines = stdout.split('\n').map(l => l.trim()).filter(Boolean);
       console.log(`Android Provider: Received ${lines.length} lines of output.`);
 
@@ -43,8 +46,6 @@ export class AndroidAdbProvider implements StorageProvider {
         if (line.startsWith('total ') || line.includes('No such file or directory')) continue;
         if (line.endsWith(' .') || line.endsWith(' ..')) continue;
 
-        // Regex to match: drwxrwx--x 15 root sdcard_rw 4096 2024-04-12 10:45 Alarms
-        // or: -rw-rw---- 1 root sdcard_rw 12345 2024-04-12 10:45 file.txt
         const match = line.match(/^([d\-|l][rwx\-STst]{9})\s+\d+\s+\S+\s+\S+\s+(\d+)\s+(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\s+(.*)$/);
 
         if (match) {
@@ -59,7 +60,6 @@ export class AndroidAdbProvider implements StorageProvider {
             actualName = name.split(' -> ')[0];
           }
 
-          // If ls returns the full path (e.g. /sdcard), strip it to get just the name
           if (actualName.startsWith('/')) {
             actualName = actualName.substring(actualName.lastIndexOf('/') + 1);
           }
@@ -127,7 +127,7 @@ export class AndroidAdbProvider implements StorageProvider {
     }
     try {
       const adbPath = await getAdbPath();
-      await execAsync(`${adbPath} -s ${this.descriptor.serial} pull "${androidPath}" "${localPath}"`);
+      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "pull", androidPath, localPath]);
     } catch (error: any) {
       throw new Error(`ADB pull failed: ${error.message}`);
     }
@@ -139,7 +139,7 @@ export class AndroidAdbProvider implements StorageProvider {
     }
     try {
       const adbPath = await getAdbPath();
-      await execAsync(`${adbPath} -s ${this.descriptor.serial} push "${localPath}" "${androidPath}"`);
+      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "push", localPath, androidPath]);
     } catch (error: any) {
       throw new Error(`ADB push failed: ${error.message}`);
     }
@@ -151,7 +151,7 @@ export class AndroidAdbProvider implements StorageProvider {
     }
     try {
       const adbPath = await getAdbPath();
-      await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "rm -rf \\"${androidPath}\\""`);
+      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `rm -rf "${androidPath}"`]);
     } catch (error: any) {
       throw new Error(`ADB delete failed: ${error.message}`);
     }
@@ -163,7 +163,7 @@ export class AndroidAdbProvider implements StorageProvider {
     }
     try {
       const adbPath = await getAdbPath();
-      await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "mv \\"${oldPath}\\" \\"${newPath}\\""`);
+      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `mv "${oldPath}" "${newPath}"`]);
     } catch (error: any) {
       throw new Error(`ADB rename failed: ${error.message}`);
     }
@@ -175,7 +175,7 @@ export class AndroidAdbProvider implements StorageProvider {
     }
     try {
       const adbPath = await getAdbPath();
-      await execAsync(`${adbPath} -s ${this.descriptor.serial} shell "mkdir -p \\"${androidPath}\\""`);
+      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `mkdir -p "${androidPath}"`]);
     } catch (error: any) {
       throw new Error(`ADB mkdir failed: ${error.message}`);
     }
