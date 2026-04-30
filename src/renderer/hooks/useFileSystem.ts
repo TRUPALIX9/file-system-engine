@@ -54,7 +54,7 @@ export function useFileSystem(isMac: boolean) {
     setError(null);
 
     const result = await engine.storage.browse({ 
-      location: { providerId: provider.id, providerKind: 'desktop-filesystem', path },
+      location: { providerId: provider.id, providerKind: provider.kind, path },
       includeHidden: false 
     });
 
