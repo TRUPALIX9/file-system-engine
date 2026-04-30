@@ -15,7 +15,7 @@ import { Settings } from './components/Settings';
 import { StatusBar } from './components/StatusBar';
 import { SecurityDialog } from './components/SecurityDialog';
 import { BRAND, APP_NAME, ThemeMode } from './constants';
-import { FileEntry, StorageProviderDescriptor } from '@shared/types';
+import { FileEntry, StorageProviderDescriptor, MountedFilesystemDescriptor, AndroidProviderDescriptor } from '@shared/types';
 
 // Error Boundary for stability
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -95,33 +95,37 @@ export function App(): ReactElement {
 
   // Sync startup
   React.useEffect(() => {
-    if (!hasStartedUp && inventory && allDesktopProviders.length > 0) {
-      const systemProvider = allDesktopProviders.find(p => p.id === 'root');
+    if (inventory && allDesktopProviders.length > 0 && !hasStartedUp) {
+      const systemProvider = allDesktopProviders.find(p => p.id === 'root') || allDesktopProviders[0];
       if (systemProvider) {
+        const path = (systemProvider as MountedFilesystemDescriptor).mountPath || (isMac ? '/' : 'C:\\');
         setActiveTab("Explorer");
         setSelectedProviderId(systemProvider.id);
-        void browseProvider(systemProvider, systemProvider.mountPath, 'left');
+        void browseProvider(systemProvider, path, 'left');
         setHasStartedUp(true);
       }
     }
-  }, [inventory, allDesktopProviders, hasStartedUp, browseProvider, setSelectedProviderId, setHasStartedUp]);
+  }, [inventory, allDesktopProviders, hasStartedUp, browseProvider, setSelectedProviderId, setHasStartedUp, isMac]);
 
-  const handleSelectProvider = async (p: any) => {
+  const handleSelectProvider = async (p: StorageProviderDescriptor) => {
     setActiveTab("Explorer");
     
     // Determine the starting path. Desktop has mountPath, Android has roots.
-    const startPath = p.kind === 'android-adb' 
-      ? (p.roots?.[0]?.path || '/sdcard') 
-      : p.mountPath;
+    let startPath = '/';
+    if (p.kind === 'android-adb' || p.kind === 'android-mtp') {
+      startPath = (p as AndroidProviderDescriptor).roots?.[0]?.path || '/sdcard';
+    } else {
+      startPath = (p as MountedFilesystemDescriptor).mountPath || '/';
+    }
 
     if (focusedPane === 'left') {
       setSelectedProviderId(p.id);
       setSelectedEntries([]);
-      await browseProvider(p as StorageProviderDescriptor, startPath, 'left');
+      await browseProvider(p, startPath, 'left');
     } else {
       setSelectedProviderIdRight(p.id);
       setSelectedEntriesRight([]);
-      await browseProvider(p as StorageProviderDescriptor, startPath, 'right');
+      await browseProvider(p, startPath, 'right');
     }
   };
 

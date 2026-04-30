@@ -55,9 +55,13 @@ export function useFileSystem(isMac: boolean) {
     setError(null);
 
     // Safety: Ensure path is a string and not empty for IPC validation
+    if (typeof path !== 'string' || path.length === 0) {
+      console.warn(`useFileSystem: browseProvider called with invalid path: "${path}". Defaulting to "/". Provider:`, provider.id);
+    }
     const safePath = (typeof path === 'string' && path.length > 0) ? path : '/';
 
     try {
+      console.log(`useFileSystem: Browsing ${provider.id} at ${safePath} (pane: ${pane})`);
       const result = await engine.storage.browse({ 
         location: { providerId: provider.id, providerKind: provider.kind, path: safePath },
         includeHidden: false 
