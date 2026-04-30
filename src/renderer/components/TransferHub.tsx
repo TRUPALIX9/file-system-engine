@@ -1,0 +1,126 @@
+import React from 'react';
+import { Box, Typography, Button, Stack } from '@mui/material';
+import { FilePane } from './FilePane';
+import { FileEntry, DirectoryListing, MountedFilesystemDescriptor } from '@shared/types';
+import { CustomIcon } from './CustomIcon';
+
+interface TransferHubProps {
+  focusedPane: 'left' | 'right';
+  setFocusedPane: (pane: 'left' | 'right') => void;
+  listing: DirectoryListing | null;
+  listingRight: DirectoryListing | null;
+  selectedProvider: MountedFilesystemDescriptor | null;
+  selectedProviderRight: MountedFilesystemDescriptor | null;
+  selectedEntry: FileEntry | null;
+  selectedEntryRight: FileEntry | null;
+  loadingLeft: boolean;
+  loadingRight: boolean;
+  onSelectEntry: (entry: FileEntry, pane: 'left' | 'right') => void;
+  onOpenEntry: (entry: FileEntry, pane: 'left' | 'right') => void;
+  onNavigateTo: (path: string, pane: 'left' | 'right') => void;
+  onContextMenu: (e: React.MouseEvent, entry: FileEntry) => void;
+  onExecuteTransfer: (kind: 'copy' | 'move') => void;
+  globalError: string | null;
+}
+
+export const TransferHub: React.FC<TransferHubProps> = ({
+  focusedPane,
+  setFocusedPane,
+  listing,
+  listingRight,
+  selectedProvider,
+  selectedProviderRight,
+  selectedEntry,
+  selectedEntryRight,
+  loadingLeft,
+  loadingRight,
+  onSelectEntry,
+  onOpenEntry,
+  onNavigateTo,
+  onContextMenu,
+  onExecuteTransfer,
+  globalError
+}) => {
+  return (
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>Transfer Hub</Typography>
+          <Typography variant="body2" color="text.secondary">Move or Copy files between connected drives and folders.</Typography>
+        </Box>
+        <Stack direction="row" spacing={1}>
+          <Button 
+            variant="contained" 
+            size="medium" 
+            startIcon={<CustomIcon name="copy" size={18} />} 
+            onClick={() => onExecuteTransfer('copy')}
+            sx={{ px: 3, bgcolor: 'secondary.main', '&:hover': { bgcolor: 'secondary.dark' } }}
+          >
+            Copy
+          </Button>
+          <Button 
+            variant="contained" 
+            size="medium" 
+            startIcon={<CustomIcon name="move" size={18} />} 
+            onClick={() => onExecuteTransfer('move')}
+            sx={{ px: 3 }}
+          >
+            Move
+          </Button>
+        </Stack>
+      </Box>
+      <Box sx={{ flex: 1, minHeight: 0, display: 'flex', gap: 1 }}>
+        <Box sx={{ 
+          flex: 1, 
+          minWidth: 0, 
+          border: '1px solid', 
+          borderColor: focusedPane === 'left' ? 'primary.main' : 'divider', 
+          borderRadius: 2, 
+          overflow: 'hidden', 
+          transition: 'border-color 0.2s' 
+        }}>
+          <FilePane 
+            pane="left"
+            currentListing={listing}
+            currentProvider={selectedProvider}
+            selectedEntry={selectedEntry}
+            loading={loadingLeft}
+            onSelectEntry={(e) => onSelectEntry(e, 'left')}
+            onOpenEntry={onOpenEntry}
+            onNavigateTo={onNavigateTo}
+            onContextMenu={onContextMenu}
+            onNewFolder={() => {}}
+            globalError={globalError}
+            focusedPane={focusedPane}
+            setFocusedPane={setFocusedPane}
+          />
+        </Box>
+        <Box sx={{ 
+          flex: 1, 
+          minWidth: 0, 
+          border: '1px solid', 
+          borderColor: focusedPane === 'right' ? 'primary.main' : 'divider', 
+          borderRadius: 2, 
+          overflow: 'hidden', 
+          transition: 'border-color 0.2s' 
+        }}>
+          <FilePane 
+            pane="right"
+            currentListing={listingRight}
+            currentProvider={selectedProviderRight}
+            selectedEntry={selectedEntryRight}
+            loading={loadingRight}
+            onSelectEntry={(e) => onSelectEntry(e, 'right')}
+            onOpenEntry={onOpenEntry}
+            onNavigateTo={onNavigateTo}
+            onContextMenu={onContextMenu}
+            onNewFolder={() => {}}
+            globalError={globalError}
+            focusedPane={focusedPane}
+            setFocusedPane={setFocusedPane}
+          />
+        </Box>
+      </Box>
+    </Box>
+  );
+};

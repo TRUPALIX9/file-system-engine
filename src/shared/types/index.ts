@@ -8,3 +8,4 @@ export * from "./operations";
 export * from "./platform";
 export * from "./provider";
 export * from "./scan";
+export * from "./records";

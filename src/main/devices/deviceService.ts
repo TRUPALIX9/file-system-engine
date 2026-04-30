@@ -16,10 +16,12 @@ import { DesktopFilesystemProvider } from "@main/providers/DesktopFilesystemProv
 import { ProviderRegistry } from "@main/providers/providerRegistry";
 import { FileOperationService } from "@main/file-ops/fileOperationService";
 import { StorageAnalysisService } from "@main/storage/storageAnalysisService";
+import { recordsService } from "@main/database/recordsService";
 
 async function existingKnownFolders(): Promise<MountedFilesystemDescriptor[]> {
   const home = homedir();
   const candidates = [
+    ["Computer", process.platform === "win32" ? "C:\\" : "/"],
     ["Home", home],
     ["Downloads", join(home, "Downloads")],
     ["Documents", join(home, "Documents")],
@@ -77,7 +79,15 @@ export class DeviceService {
       await this.refreshInventory();
     }
 
-    return this.storageAnalysis.analyze(request);
+    const result = await this.storageAnalysis.analyze(request);
+    
+    recordsService.addRecord({
+      kind: "scan",
+      description: `Analyzed storage at ${request.root.path}`,
+      details: { totalBytes: result.totalBytes, fileCount: result.fileCount }
+    });
+
+    return result;
   }
 
   async executeOperationPlan(
@@ -96,6 +106,14 @@ export class DeviceService {
       await this.refreshInventory();
     }
 
-    return this.fileOperations.executePlan(request);
+    const result = await this.fileOperations.executePlan(request);
+    
+    recordsService.addRecord({
+      kind: "operation",
+      description: `Executed ${request.operations.length} file operation(s)`,
+      details: { operations: request.operations.map(o => o.kind), status: result.status }
+    });
+
+    return result;
   }
 }

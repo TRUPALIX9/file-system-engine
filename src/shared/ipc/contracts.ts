@@ -14,7 +14,9 @@ import type {
   LlmProviderStatus,
   ScanJob,
   StartScanRequest,
-  StartScanResult
+  StartScanResult,
+  GetRecordsRequest,
+  GetRecordsResponse
 } from "../types";
 import type { IpcErrorCode } from "./errors";
 
@@ -35,6 +37,7 @@ export interface IpcFailure {
 export type IpcResult<T> = IpcSuccess<T> | IpcFailure;
 
 export interface FileSystemEngineApi {
+  platform: string;
   devices: {
     list: () => Promise<IpcResult<DeviceInventory>>;
   };
@@ -55,11 +58,15 @@ export interface FileSystemEngineApi {
   };
   app: {
     openExternal: (request: OpenExternalRequest) => Promise<IpcResult<OpenExternalResult>>;
+    showOpenDialog: (request: ShowOpenDialogRequest) => Promise<IpcResult<ShowOpenDialogResult>>;
   };
   operations: {
     executePlan: (
       request: ExecuteOperationPlanRequest
     ) => Promise<IpcResult<ExecuteOperationPlanResult>>;
+  };
+  records: {
+    get: (request: GetRecordsRequest) => Promise<IpcResult<GetRecordsResponse>>;
   };
 }
 
@@ -68,7 +75,18 @@ export interface OpenExternalRequest {
 }
 
 export interface OpenExternalResult {
-  opened: true;
+  opened: boolean;
+}
+
+export interface ShowOpenDialogRequest {
+  properties?: Array<"openFile" | "openDirectory" | "multiSelections" | "showHiddenFiles" | "createDirectory" | "promptToCreate" | "noResolveAliases" | "treatPackageAsDirectory" | "dontAddToRecent">;
+  title?: string;
+  buttonLabel?: string;
+}
+
+export interface ShowOpenDialogResult {
+  canceled: boolean;
+  filePaths: string[];
 }
 
 export interface IpcContractMap {
@@ -111,5 +129,13 @@ export interface IpcContractMap {
   "operations:execute-plan": {
     request: ExecuteOperationPlanRequest;
     response: ExecuteOperationPlanResult;
+  };
+  "records:get": {
+    request: GetRecordsRequest;
+    response: GetRecordsResponse;
+  };
+  "app:show-open-dialog": {
+    request: ShowOpenDialogRequest;
+    response: ShowOpenDialogResult;
   };
 }

@@ -92,7 +92,18 @@ export class DesktopFilesystemProvider implements StorageProvider {
     }
 
     const directoryPath = assertPathInsideRoot(this.descriptor.mountPath, request.location.path);
-    const dirents = await readdir(directoryPath, { withFileTypes: true });
+    let dirents;
+    try {
+      dirents = await readdir(directoryPath, { withFileTypes: true });
+    } catch (error: any) {
+      if (error.code === 'EPERM' || error.code === 'EACCES') {
+        throw new AppError(
+          "permission-denied",
+          "macOS requires you to grant this app Full Disk Access in System Settings to read this folder."
+        );
+      }
+      throw error;
+    }
     const entries = await Promise.all(
       dirents
         .filter((dirent) => request.includeHidden || !dirent.name.startsWith("."))

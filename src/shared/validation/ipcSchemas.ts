@@ -200,7 +200,24 @@ export const executeOperationPlanRequestSchema = z
 
 export const openExternalRequestSchema = z
   .object({
-    url: z.string().url().max(2048).startsWith("https://")
+    url: z.string().max(2048).refine(val => val.startsWith("https://") || val.startsWith("x-apple.systempreferences:"), {
+      message: "URL must be https:// or x-apple.systempreferences:"
+    })
+  })
+  .strict();
+
+export const getRecordsRequestSchema = z
+  .object({
+    limit: z.number().int().min(1).max(100),
+    offset: z.number().int().min(0)
+  })
+  .strict();
+
+export const showOpenDialogSchema = z
+  .object({
+    properties: z.array(z.string()).optional(),
+    title: z.string().optional(),
+    buttonLabel: z.string().optional()
   })
   .strict();
 
@@ -214,7 +231,9 @@ export const ipcRequestSchemas = {
   [IPC_CHANNELS.aiStatus]: z.undefined(),
   [IPC_CHANNELS.aiRunTask]: aiTaskRequestSchema,
   [IPC_CHANNELS.appOpenExternal]: openExternalRequestSchema,
-  [IPC_CHANNELS.operationsExecutePlan]: executeOperationPlanRequestSchema
+  [IPC_CHANNELS.operationsExecutePlan]: executeOperationPlanRequestSchema,
+  [IPC_CHANNELS.recordsGet]: getRecordsRequestSchema,
+  [IPC_CHANNELS.appShowOpenDialog]: showOpenDialogSchema
 } as const;
 
 export type IpcRequestSchemas = typeof ipcRequestSchemas;

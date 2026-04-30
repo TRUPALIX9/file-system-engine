@@ -1,0 +1,24 @@
+<svg width="768" height="900" viewBox="0 0 768 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="128" y1="60" x2="640" y2="612" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="206" y1="178" x2="562" y2="534" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <rect x="128" y="72" width="512" height="512" rx="116" fill="url(#bg)"/>
+  <rect x="218" y="168" width="136" height="48" rx="24" fill="#334155"/>
+  <path d="M200 214C200 191.909 217.909 174 240 174H331.123C344.277 174 356.57 180.527 363.938 191.428L383.441 220H516C538.091 220 556 237.909 556 260V414C556 436.091 538.091 454 516 454H240C217.909 454 200 436.091 200 414V214Z" fill="#E2E8F0"/>
+  <rect x="254" y="262" width="248" height="152" rx="30" fill="#0F172A" stroke="url(#accent)" stroke-width="12"/>
+  <rect x="284" y="294" width="52" height="44" rx="10" fill="url(#accent)"/>
+  <rect x="352" y="294" width="52" height="44" rx="10" fill="#38BDF8" fill-opacity="0.9"/>
+  <rect x="420" y="294" width="52" height="44" rx="10" fill="#14B8A6" fill-opacity="0.9"/>
+  <rect x="284" y="350" width="52" height="44" rx="10" fill="#38BDF8" fill-opacity="0.78"/>
+  <rect x="352" y="350" width="52" height="44" rx="10" fill="#E2E8F0"/>
+  <path d="M420 372H470" stroke="url(#accent)" stroke-width="12" stroke-linecap="round"/>
+  <text x="384" y="694" text-anchor="middle" fill="#0F172A" font-family="Arial, Helvetica, sans-serif" font-size="82" font-weight="700">File System</text>
+  <text x="384" y="782" text-anchor="middle" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="82" font-weight="700">Engine</text>
+</svg>

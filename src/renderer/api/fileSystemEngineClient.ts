@@ -3,6 +3,7 @@ import type { FileSystemEngineApi } from "@shared/ipc";
 const now = () => new Date().toISOString();
 
 const browserPreviewApi: FileSystemEngineApi = {
+  platform: "browser",
   devices: {
     list: async () => ({
       ok: true,
@@ -131,6 +132,13 @@ const browserPreviewApi: FileSystemEngineApi = {
       data: {
         opened: true
       }
+    }),
+    showOpenDialog: async () => ({
+      ok: true,
+      data: {
+        canceled: true,
+        filePaths: []
+      }
     })
   },
   operations: {
@@ -140,6 +148,15 @@ const browserPreviewApi: FileSystemEngineApi = {
         planId: request.planId,
         status: "failed",
         logs: []
+      }
+    })
+  },
+  records: {
+    get: async () => ({
+      ok: true,
+      data: {
+        records: [],
+        totalCount: 0
       }
     })
   }

@@ -11,6 +11,7 @@ import {
 import { DeviceService } from "@main/devices/deviceService";
 import { validateIpcRequest } from "@main/security/ipcValidation";
 import { ok, toIpcFailure } from "./ipcResult";
+import { recordsService } from "@main/database/recordsService";
 
 type IpcHandler<TChannel extends keyof IpcContractMap> = (
   request: IpcContractMap[TChannel]["request"]
@@ -103,10 +104,27 @@ export function registerIpcHandlers(): void {
 
     return {
       opened: true
-    } as const;
+    };
+  });
+
+  handle(IPC_CHANNELS.appShowOpenDialog, async (request) => {
+    const { dialog } = require("electron");
+    const result = await dialog.showOpenDialog({
+      properties: request.properties,
+      title: request.title,
+      buttonLabel: request.buttonLabel
+    });
+    return {
+      canceled: result.canceled,
+      filePaths: result.filePaths
+    };
   });
 
   handle(IPC_CHANNELS.operationsExecutePlan, (request): Promise<ExecuteOperationPlanResult> =>
     deviceService.executeOperationPlan(request)
   );
+
+  handle(IPC_CHANNELS.recordsGet, async (request) => {
+    return recordsService.getRecords(request);
+  });
 }

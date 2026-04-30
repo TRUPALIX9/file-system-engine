@@ -1,73 +1,66 @@
-# File System Engine
+# 🛸 File System Engine
 
-File System Engine is a production-minded desktop product concept for macOS and Windows. It combines smart file management, external drive management, Android file access, duplicate cleanup, document understanding, and local-first AI suggestions.
+A high-performance, secure, and intelligent desktop application for local file management, storage analysis, and multi-device organization. Built with **Electron**, **React 19**, and **Material UI**.
 
-The product deliberately treats Android phones as a separate device class instead of assuming they behave like mounted drives. Mounted filesystems use desktop filesystem APIs. Android devices use a provider transport layer, with ADB as the primary cross-platform path.
+![App Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Build Status](https://img.shields.io/badge/build-passing-success)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgrey)
 
-## Current Phase
+## 🌟 Key Features
 
-- Phase 1: Product Definition - complete
-- Phase 2: Technical Architecture - complete
-- Phase 3: Folder Structure and Shared Types - complete
-- Phase 4: Electron App Shell - complete
-- Phase 5: Preload and IPC Contracts - complete
-- Phase 6: Desktop Drive Detection and Filesystem Support - complete
-- Phase 7: Writable Detection and NTFS Driver Assist - complete
-- Phase 8: Desktop File Operations - complete
-- Storage Analyzer v1 - complete
-- Next: Phase 9 - Android Device Integration via ADB
+### 📂 Pro File Browser
+- **Dual-Pane Operations**: Side-by-side file browsing for seamless copy/move workflows.
+- **Smart Breadcrumbs**: Interactive path navigation with instant traversal.
+- **Quick-Access Sidebar**: Rapid switching between Home, Downloads, Documents, and mounted drives.
 
-## Key Rules
+### 🛡️ Secure Architecture
+- **Context Isolation**: Hardened preload API prevents renderer access to Node.js internals.
+- **Strict CSP**: Content Security Policy allows MUI dynamic styling while blocking external script execution.
+- **Permission Awareness**: Built-in guidance for macOS Full Disk Access and Windows Elevation.
 
-- Use File System Engine consistently as the product name.
-- Keep mounted filesystem providers separate from Android providers.
-- Use ADB as the primary Android implementation path.
-- Never claim File System Engine can enable NTFS write support on macOS by itself.
-- Disable write actions when a target is read-only.
-- Use a parser-first pipeline before AI analysis.
-- Support no-AI mode gracefully.
+### 🤖 Intelligent Foundations (Phase 5/6)
+- **Typed IPC**: Fully type-safe communication between Main and Renderer processes.
+- **Activity Records**: Persistent logging of file operations via SQLite.
+- **Agentic Infrastructure**: Integrated "Agent Pack" roles for automated maintenance and feature expansion.
 
-## Project Documents
+## 🧠 Agent & Skill Architecture
 
-- [Phase 1 - Product Definition](docs/phases/phase-01-product-definition.md)
-- [Phase 2 - Technical Architecture](docs/phases/phase-02-technical-architecture.md)
-- [Phase 3 - Folder Structure and Shared Types](docs/phases/phase-03-folder-structure-shared-types.md)
-- [Phase 4 - Electron App Shell](docs/phases/phase-04-electron-app-shell.md)
-- [Phase 5 and 6 - IPC Contracts and Desktop Filesystems](docs/phases/phase-05-06-ipc-contracts-desktop-filesystems.md)
-- [Phase 7, 8, and Storage Analyzer](docs/phases/phase-07-08-storage-analyzer.md)
-- [Agent Markdown Pack](agents/)
+This project uses an **Agentic Development** approach, where specialized agents manage distinct domains. We use **Skills** (found in `/skills`) to maintain code quality and stability.
 
-## Development
+| Skill | Purpose |
+| :--- | :--- |
+| **UI Rendering Safety** | Prevents React crashes and "blank screens" during state transitions. |
+| **Window Lifecycle** | Manages Electron window references to prevent memory errors. |
+| **Production Styling & CSP** | Ensures MUI and Security Policies coexist perfectly. |
 
-Install dependencies:
+## 🚀 Getting Started
 
-```sh
+### Prerequisites
+- Node.js (>= 20.19.0)
+- npm
+
+### Development
+```bash
+# Install dependencies
 npm install
-```
 
-Run checks:
-
-```sh
-npm run typecheck
-npm run typecheck:node
-npm run typecheck:web
-npm run build
-```
-
-Run the Electron shell:
-
-```sh
+# Start development server (with HMR)
 npm run dev
 ```
 
-Run the production-built Electron shell:
-
-```sh
+### Production Build
+```bash
+# Build and package for the current OS
 npm run build
 npm run start
 ```
 
-The Vite browser preview at `http://127.0.0.1:5173/` is useful for UI work, but real drive detection, file operations, macOS tags, and NTFS driver assist require Electron because they run through the main process.
+## 🗺️ Project Status
+- [x] **Phase 1-4**: Core Infrastructure & React Shell
+- [x] **Phase 5-6**: IPC Contracts & Desktop Filesystem Integration
+- [ ] **Phase 7-8**: Storage Analysis Engine (Next)
+- [ ] **Phase 9**: Duplicate File Detection
+- [ ] **Phase 10**: AI Engine Integration
 
-GitHub CI runs `npm ci`, `npm run build`, and `npm audit --audit-level=high`.
-It also runs `npm run test` for contract validation tests.
+---
+Developed with ❤️ by the File System Engine Team.

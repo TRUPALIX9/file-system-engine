@@ -17,7 +17,7 @@ function productionCspPlugin(): PluginOption {
           `<head>
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self';"
     />`
         )
     }
@@ -28,6 +28,7 @@ export default defineConfig({
   plugins: [react(), productionCspPlugin()],
   root: ".",
   base: "./",
+  publicDir: resolve(projectRoot, "public"),
   resolve: {
     alias: {
       "@main": resolve(projectRoot, "src/main"),

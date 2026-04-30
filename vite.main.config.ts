@@ -3,7 +3,12 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
-const electronExternals = ["electron", ...builtinModules, ...builtinModules.map((mod) => `node:${mod}`)];
+const electronExternals = [
+  "electron",
+  "better-sqlite3",
+  ...builtinModules,
+  ...builtinModules.map((mod) => `node:${mod}`)
+];
 const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({

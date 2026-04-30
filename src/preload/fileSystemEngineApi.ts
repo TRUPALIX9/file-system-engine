@@ -16,7 +16,9 @@ import type {
   StorageAnalysisResult,
   ScanJob,
   StartScanRequest,
-  StartScanResult
+  StartScanResult,
+  GetRecordsRequest,
+  GetRecordsResponse
 } from "@shared/types";
 import type { OpenExternalRequest, OpenExternalResult } from "@shared/ipc";
 
@@ -25,6 +27,7 @@ async function invoke<TResponse>(channel: IpcChannel, request?: unknown): Promis
 }
 
 export const fileSystemEngineApi: FileSystemEngineApi = {
+  platform: process.platform,
   devices: {
     list: () => invoke<DeviceInventory>(IPC_CHANNELS.devicesList)
   },
@@ -47,11 +50,16 @@ export const fileSystemEngineApi: FileSystemEngineApi = {
   },
   app: {
     openExternal: (request: OpenExternalRequest) =>
-      invoke<OpenExternalResult>(IPC_CHANNELS.appOpenExternal, request)
+      invoke<OpenExternalResult>(IPC_CHANNELS.appOpenExternal, request),
+    showOpenDialog: (request: any) =>
+      invoke<any>(IPC_CHANNELS.appShowOpenDialog, request)
   },
   operations: {
     executePlan: (request: ExecuteOperationPlanRequest) =>
       invoke<ExecuteOperationPlanResult>(IPC_CHANNELS.operationsExecutePlan, request)
+  },
+  records: {
+    get: (request: GetRecordsRequest) => invoke<GetRecordsResponse>(IPC_CHANNELS.recordsGet, request)
   }
 };
 

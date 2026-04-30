@@ -11,7 +11,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
     "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
-    "build": "npm run typecheck && npm run build:main && npm run build:preload && npm run build:renderer",
+    "build": "node scripts/generate-icons.mjs && npm run typecheck && npm run build:main && npm run build:preload && npm run build:renderer",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder",
     "build:main": "vite build --config vite.main.config.ts",
     "build:preload": "vite build --config vite.preload.config.ts",
     "build:renderer": "vite build --config vite.config.ts",
@@ -21,7 +23,33 @@
   "engines": {
     "node": ">=20.19.0"
   },
+  "build": {
+    "appId": "com.filesystemengine.app",
+    "productName": "File System Engine",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "public/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "^9.0.0",
     "better-sqlite3": "^11.9.1",
     "csv-parse": "^5.6.0",
     "lucide-react": "^1.14.0",
@@ -40,6 +68,8 @@
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^6.0.1",
     "electron": "^41.3.0",
+    "electron-builder": "^26.8.1",
+    "sharp": "^0.34.5",
     "typescript": "^6.0.3",
     "vite": "^8.0.10",
     "vitest": "^4.1.5"
