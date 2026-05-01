@@ -58,7 +58,19 @@ export function useFileSystem(isMac: boolean) {
     if (typeof path !== 'string' || path.length === 0) {
       console.warn(`useFileSystem: browseProvider called with invalid path: "${path}". Defaulting to "/". Provider:`, provider.id);
     }
-    const safePath = (typeof path === 'string' && path.length > 0) ? path : '/';
+    let safePath = (typeof path === 'string' && path.length > 0) ? path : '/';
+    
+    // Safety: Strip trailing slash if not root to prevent "Not a directory" errors
+    if (safePath.length > 1 && (safePath.endsWith('/') || safePath.endsWith('\\'))) {
+      safePath = safePath.slice(0, -1);
+    }
+
+    // Safety: If it clearly looks like a file (has an extension and not a known folder), don't browse it
+    const isLikelyFile = /\.[a-zA-Z0-0]{1,10}$/.test(safePath) && !['/','C:\\'].includes(safePath);
+    if (isLikelyFile) {
+      console.warn(`useFileSystem: browseProvider aborted - path looks like a file: ${safePath}`);
+      return;
+    }
 
     try {
       console.log(`useFileSystem: Browsing ${provider.id} at ${safePath} (pane: ${pane})`);
@@ -73,10 +85,12 @@ export function useFileSystem(isMac: boolean) {
         if (pane === 'left') setListing(result.data.listing);
         else setListingRight(result.data.listing);
       } else {
+        if (pane === 'left') setListing(null); else setListingRight(null);
         setError(result.error.message);
       }
     } catch (e: any) {
       if (pane === 'left') setLoadingLeft(false); else setLoadingRight(false);
+      if (pane === 'left') setListing(null); else setListingRight(null);
       setError(e.message || "Failed to browse location");
     }
   }, []);

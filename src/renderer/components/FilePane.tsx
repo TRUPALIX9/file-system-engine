@@ -3,7 +3,7 @@ import {
   Box, Typography, IconButton, Button, Table, TableBody, 
   TableCell, TableContainer, TableHead, TableRow, alpha, 
   Breadcrumbs, Link, styled, useTheme, Fade, CircularProgress,
-  Divider
+  Divider, Menu, MenuItem, ListItemIcon, Checkbox, TableSortLabel
 } from '@mui/material';
 import {
   ChevronRight as ChevronRightIcon,
@@ -40,6 +40,8 @@ interface FilePaneProps {
   globalError: string | null;
   focusedPane: 'left' | 'right';
   setFocusedPane: (pane: 'left' | 'right') => void;
+  allProviders?: StorageProviderDescriptor[];
+  onSelectProvider?: (p: StorageProviderDescriptor) => void;
 }
 
 export const FilePane: React.FC<FilePaneProps> = ({
@@ -55,9 +57,56 @@ export const FilePane: React.FC<FilePaneProps> = ({
   onNewFolder,
   globalError,
   focusedPane,
-  setFocusedPane
+  setFocusedPane,
+  allProviders,
+  onSelectProvider
 }) => {
   const theme = useTheme();
+  const [driveMenuAnchor, setDriveMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const [sortKey, setSortKey] = React.useState<'name' | 'kind' | 'size'>('name');
+  const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>('asc');
+  const isFocused = focusedPane === pane;
+
+  const sortedEntries = React.useMemo(() => {
+    if (!currentListing) return [];
+    return [...currentListing.entries].sort((a, b) => {
+      let valA: any = '';
+      let valB: any = '';
+      
+      if (sortKey === 'name') {
+        valA = a.name.toLowerCase();
+        valB = b.name.toLowerCase();
+      } else if (sortKey === 'kind') {
+        valA = a.kind.toLowerCase();
+        valB = b.kind.toLowerCase();
+      } else if (sortKey === 'size') {
+        valA = a.metadata.sizeBytes || 0;
+        valB = b.metadata.sizeBytes || 0;
+      }
+
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [currentListing, sortKey, sortOrder]);
+
+  const handleSort = (key: 'name' | 'kind' | 'size') => {
+    if (sortKey === key) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortOrder('asc');
+    }
+  };
+
+  const formatSize = (bytes: number | undefined) => {
+    if (bytes === undefined) return '--';
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
 
   const handleRowClick = (e: React.MouseEvent, entry: FileEntry) => {
     if (e.ctrlKey || e.metaKey) {
@@ -142,6 +191,17 @@ export const FilePane: React.FC<FilePaneProps> = ({
         bgcolor: 'background.paper'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <IconButton 
+            size="small" 
+            onClick={(e) => setDriveMenuAnchor(e.currentTarget)}
+            sx={{ 
+              color: 'primary.main',
+              bgcolor: alpha(theme.palette.primary.main, 0.05),
+              '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.15) }
+            }}
+          >
+            <CustomIcon name="storage" size={18} />
+          </IconButton>
           <IconButton size="small" onClick={() => onNavigateTo("..", pane)} disabled={!currentListing}>
             <CustomIcon name="up" size={18} />
           </IconButton>
@@ -159,8 +219,48 @@ export const FilePane: React.FC<FilePaneProps> = ({
             '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
           }}
         >
-          <CustomIcon name="folder-plus" size={18} />
+          <CustomIcon name="create-folder" size={18} />
         </IconButton>
+
+        <Menu
+          anchorEl={driveMenuAnchor}
+          open={Boolean(driveMenuAnchor)}
+          onClose={() => setDriveMenuAnchor(null)}
+          slotProps={{
+            paper: {
+              sx: {
+                mt: 1,
+                minWidth: 200,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                borderRadius: 2
+              }
+            }
+          }}
+        >
+          <Typography variant="overline" sx={{ px: 2, py: 1, display: 'block', color: 'text.disabled', fontWeight: 800 }}>
+            Select Drive
+          </Typography>
+          {allProviders?.map((p) => (
+            <MenuItem 
+              key={p.id} 
+              onClick={() => {
+                onSelectProvider?.(p);
+                setDriveMenuAnchor(null);
+              }}
+              selected={p.id === currentProvider?.id}
+            >
+              <ListItemIcon>
+                <CustomIcon name={p.kind === 'android-adb' ? 'android' : 'storage'} size={18} />
+              </ListItemIcon>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>{p.displayName}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {p.kind === 'android-adb' ? 'Android Device' : (p as any).mountPath || '/'}
+                </Typography>
+              </Box>
+            </MenuItem>
+          ))}
+        </Menu>
       </Box>
 
       <Box sx={{ flex: 1, overflow: 'auto', position: 'relative' }}>
@@ -223,32 +323,87 @@ export const FilePane: React.FC<FilePaneProps> = ({
             <Table size="small" stickyHeader sx={{ tableLayout: 'fixed' }}>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>Name</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>Kind</TableCell>
-                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }} align="right">Size</TableCell>
+                  <TableCell padding="checkbox" sx={{ width: 48 }}>
+                    <Checkbox
+                      size="small"
+                      indeterminate={selectedEntries.length > 0 && selectedEntries.length < (currentListing?.entries.length || 0)}
+                      checked={currentListing?.entries.length ? selectedEntries.length === currentListing.entries.length : false}
+                      onChange={(e) => {
+                        if (e.target.checked && currentListing) {
+                          onSelectEntries(currentListing.entries);
+                        } else {
+                          onSelectEntries([]);
+                        }
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>
+                    <TableSortLabel
+                      active={sortKey === 'name'}
+                      direction={sortKey === 'name' ? sortOrder : 'asc'}
+                      onClick={() => handleSort('name')}
+                    >
+                      Name
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>
+                    <TableSortLabel
+                      active={sortKey === 'kind'}
+                      direction={sortKey === 'kind' ? sortOrder : 'asc'}
+                      onClick={() => handleSort('kind')}
+                    >
+                      Kind
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }} align="right">
+                    <TableSortLabel
+                      active={sortKey === 'size'}
+                      direction={sortKey === 'size' ? sortOrder : 'asc'}
+                      onClick={() => handleSort('size')}
+                    >
+                      Size
+                    </TableSortLabel>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {currentListing?.entries.map((entry) => (
-                  <StyledTableRow 
-                    key={entry.ref.path}
-                    selected={selectedEntries.some(se => se.ref.path === entry.ref.path)}
-                    onClick={(e) => handleRowClick(e, entry)}
-                    onDoubleClick={() => onOpenEntry(entry, pane)}
-                    onContextMenu={(e) => onContextMenu(e, entry)}
-                  >
-                    <TableCell sx={{ fontSize: '0.8rem', py: 0.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <FileEntryIcon entry={entry} size={18} />
-                        <Typography variant="body2" noWrap sx={{ fontSize: '0.8rem' }}>{entry.name}</Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{entry.kind}</TableCell>
-                    <TableCell sx={{ fontSize: '0.75rem', color: 'text.secondary' }} align="right">
-                      {entry.metadata.sizeBytes ? `${(entry.metadata.sizeBytes / 1024).toFixed(1)} KB` : '--'}
-                    </TableCell>
-                  </StyledTableRow>
-                ))}
+                {sortedEntries.map((entry) => {
+                  const isSelected = selectedEntries.some(se => se.ref.path === entry.ref.path);
+                  return (
+                    <StyledTableRow 
+                      key={entry.ref.path}
+                      selected={isSelected}
+                      onClick={(e) => handleRowClick(e, entry)}
+                      onDoubleClick={() => onOpenEntry(entry, pane)}
+                      onContextMenu={(e) => onContextMenu(e, entry)}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          size="small"
+                          checked={isSelected}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isSelected) {
+                              onSelectEntries(selectedEntries.filter(se => se.ref.path !== entry.ref.path));
+                            } else {
+                              onSelectEntries([...selectedEntries, entry]);
+                            }
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '0.8rem', py: 0.5 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <FileEntryIcon entry={entry} size={18} />
+                          <Typography variant="body2" noWrap sx={{ fontSize: '0.8rem' }}>{entry.name}</Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{entry.kind}</TableCell>
+                      <TableCell sx={{ fontSize: '0.75rem', color: 'text.secondary' }} align="right">
+                        {formatSize(entry.metadata.sizeBytes)}
+                      </TableCell>
+                    </StyledTableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>

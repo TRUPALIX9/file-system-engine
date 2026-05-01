@@ -22,6 +22,8 @@ interface TransferHubProps {
   onExecuteTransfer: (kind: 'copy' | 'move') => void;
   globalError: string | null;
   isTransferring: boolean;
+  allProviders?: StorageProviderDescriptor[];
+  onSelectProvider?: (p: StorageProviderDescriptor) => void;
 }
 
 export const TransferHub: React.FC<TransferHubProps> = ({
@@ -41,31 +43,33 @@ export const TransferHub: React.FC<TransferHubProps> = ({
   onContextMenu,
   onExecuteTransfer,
   globalError,
-  isTransferring
+  isTransferring,
+  allProviders,
+  onSelectProvider
 }) => {
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800 }}>Transfer Hub</Typography>
-          <Typography variant="body2" color="text.secondary">Move or Copy files between connected drives and folders.</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>Transfer Hub</Typography>
+          <Typography color="text.secondary">Move or Copy files between connected drives and folders.</Typography>
         </Box>
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={2}>
           <Button 
             variant="contained" 
-            size="medium" 
+            color="secondary" 
+            startIcon={isTransferring ? <CircularProgress size={20} color="inherit" /> : <CustomIcon name="copy" size={20} />}
             disabled={isTransferring || !listing || !listingRight || (focusedPane === 'left' ? selectedEntries.length === 0 : selectedEntriesRight.length === 0)}
-            startIcon={isTransferring ? <CircularProgress size={18} color="inherit" /> : <CustomIcon name="copy" size={18} />} 
             onClick={() => onExecuteTransfer('copy')}
-            sx={{ px: 3, bgcolor: 'secondary.main', '&:hover': { bgcolor: 'secondary.dark' } }}
+            sx={{ px: 3 }}
           >
             Copy
           </Button>
           <Button 
             variant="contained" 
-            size="medium" 
+            color="primary" 
+            startIcon={isTransferring ? <CircularProgress size={20} color="inherit" /> : <CustomIcon name="move" size={20} />}
             disabled={isTransferring || !listing || !listingRight || (focusedPane === 'left' ? selectedEntries.length === 0 : selectedEntriesRight.length === 0)}
-            startIcon={isTransferring ? <CircularProgress size={18} color="inherit" /> : <CustomIcon name="move" size={18} />} 
             onClick={() => onExecuteTransfer('move')}
             sx={{ px: 3 }}
           >
@@ -73,7 +77,8 @@ export const TransferHub: React.FC<TransferHubProps> = ({
           </Button>
         </Stack>
       </Box>
-      <Box sx={{ flex: 1, minHeight: 0, display: 'flex', gap: 1 }}>
+
+      <Box sx={{ flex: 1, display: 'flex', gap: 2, minHeight: 0 }}>
         <Box sx={{ 
           flex: 1, 
           minWidth: 0, 
@@ -97,6 +102,8 @@ export const TransferHub: React.FC<TransferHubProps> = ({
             globalError={globalError}
             focusedPane={focusedPane}
             setFocusedPane={setFocusedPane}
+            allProviders={allProviders}
+            onSelectProvider={onSelectProvider}
           />
         </Box>
         <Box sx={{ 
@@ -122,6 +129,8 @@ export const TransferHub: React.FC<TransferHubProps> = ({
             globalError={globalError}
             focusedPane={focusedPane}
             setFocusedPane={setFocusedPane}
+            allProviders={allProviders}
+            onSelectProvider={onSelectProvider}
           />
         </Box>
       </Box>

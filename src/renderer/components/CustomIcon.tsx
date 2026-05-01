@@ -7,7 +7,7 @@ interface CustomIconProps extends BoxProps {
 }
 
 export const CustomIcon: React.FC<CustomIconProps> = ({ name, size = 20, sx, ...props }) => {
-  const url = name.endsWith('.svg') ? name : `./icons/${name}.svg`;
+  const url = name.endsWith('.svg') ? name : `icons/${name}.svg`;
   return (
     <Box
       component="span"
@@ -15,8 +15,8 @@ export const CustomIcon: React.FC<CustomIconProps> = ({ name, size = 20, sx, ...
         display: 'inline-block',
         width: size,
         height: size,
-        mask: `url(${url}) no-repeat center`,
-        WebkitMask: `url(${url}) no-repeat center`,
+        mask: `url('${url}') no-repeat center`,
+        WebkitMask: `url('${url}') no-repeat center`,
         maskSize: 'contain',
         WebkitMaskSize: 'contain',
         bgcolor: 'currentColor',

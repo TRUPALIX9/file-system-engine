@@ -96,19 +96,34 @@ export function App(): ReactElement {
   // Sync startup
   React.useEffect(() => {
     if (inventory && allDesktopProviders.length > 0 && !hasStartedUp) {
+      // Pre-select System (Left) and Downloads (Right)
       const systemProvider = allDesktopProviders.find(p => p.id === 'root') || allDesktopProviders[0];
+      const downloadsProvider = inventory.knownFolders.find(p => p.displayName === 'Downloads') || 
+                          allDesktopProviders.find(p => p.displayName === 'Downloads') ||
+                          allDesktopProviders[1];
+
       if (systemProvider) {
         const path = (systemProvider as MountedFilesystemDescriptor).mountPath || (isMac ? '/' : 'C:\\');
-        setActiveTab("Explorer");
         setSelectedProviderId(systemProvider.id);
         void browseProvider(systemProvider, path, 'left');
-        setHasStartedUp(true);
       }
+
+      if (downloadsProvider) {
+        const path = (downloadsProvider as MountedFilesystemDescriptor).mountPath || (isMac ? '/Users' : 'C:\\Users');
+        setSelectedProviderIdRight(downloadsProvider.id);
+        void browseProvider(downloadsProvider, path, 'right');
+      }
+
+      setActiveTab("Explorer");
+      setHasStartedUp(true);
     }
-  }, [inventory, allDesktopProviders, hasStartedUp, browseProvider, setSelectedProviderId, setHasStartedUp, isMac]);
+  }, [inventory, allDesktopProviders, hasStartedUp, browseProvider, setSelectedProviderId, setSelectedProviderIdRight, setHasStartedUp, isMac]);
 
   const handleSelectProvider = async (p: StorageProviderDescriptor) => {
-    setActiveTab("Explorer");
+    // Only force Explorer tab if we're in a non-pane tab (Settings, Analyze, etc)
+    if (activeTab !== "Explorer" && activeTab !== "Operations") {
+      setActiveTab("Explorer");
+    }
     
     // Determine the starting path. Desktop has mountPath, Android has roots.
     let startPath = '/';
@@ -118,7 +133,10 @@ export function App(): ReactElement {
       startPath = (p as MountedFilesystemDescriptor).mountPath || '/';
     }
 
-    if (focusedPane === 'left') {
+    // Use the focused pane or default to left if none focused
+    const targetPane = focusedPane;
+    
+    if (targetPane === 'left') {
       setSelectedProviderId(p.id);
       setSelectedEntries([]);
       await browseProvider(p, startPath, 'left');
@@ -166,7 +184,9 @@ export function App(): ReactElement {
         id: Math.random().toString(36).substring(7),
         kind,
         source: { providerId: sourceProvider.id, providerKind: sourceProvider.kind, path: entry.ref.path },
-        destination: { providerId: destProvider.id, providerKind: destProvider.kind, path: destPath }
+        destination: { providerId: destProvider.id, providerKind: destProvider.kind, path: destPath },
+        destructive: false,
+        requiresConfirmation: false
       };
     });
 
@@ -224,7 +244,11 @@ export function App(): ReactElement {
                   selectedEntries={focusedPane === 'left' ? selectedEntries : selectedEntriesRight}
                   loading={focusedPane === 'left' ? loadingLeft : loadingRight}
                   onSelectEntries={(e) => focusedPane === 'left' ? setSelectedEntries(e) : setSelectedEntriesRight(e)}
-                  onOpenEntry={(entry, p) => browseProvider((focusedPane === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, entry.ref.path, p)}
+                  onOpenEntry={(entry, p) => {
+                    if (entry.kind === 'directory') {
+                      browseProvider((focusedPane === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, entry.ref.path, p);
+                    }
+                  }}
                   onNavigateTo={(path, p) => browseProvider((focusedPane === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, path, p)}
                   onContextMenu={(e, entry) => setMenuAnchor({ element: e.currentTarget as HTMLElement, entry })}
                   onNewFolder={() => { }}
@@ -247,12 +271,18 @@ export function App(): ReactElement {
                   loadingLeft={loadingLeft}
                   loadingRight={loadingRight}
                   onSelectEntries={(e, p) => p === 'left' ? setSelectedEntries(e) : setSelectedEntriesRight(e)}
-                  onOpenEntry={(entry, p) => browseProvider((p === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, entry.ref.path, p)}
+                  onOpenEntry={(entry, p) => {
+                    if (entry.kind === 'directory') {
+                      browseProvider((p === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, entry.ref.path, p);
+                    }
+                  }}
                   onNavigateTo={(path, p) => browseProvider((p === 'left' ? selectedProviderLeft! : selectedProviderRightActual!) as any, path, p)}
                   onContextMenu={(e, entry) => setMenuAnchor({ element: e.currentTarget as HTMLElement, entry })}
                   onExecuteTransfer={executeTransfer}
                   globalError={error}
                   isTransferring={isTransferring}
+                  allProviders={allProviders}
+                  onSelectProvider={handleSelectProvider}
                 />
               )}
 
