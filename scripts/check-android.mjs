@@ -1,10 +1,10 @@
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { homedir } from "os";
 import { join } from "path";
 import { existsSync } from "fs";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 async function checkAndroid() {
   const adbPath = join(homedir(), "Library", "Android", "sdk", "platform-tools", "adb");
@@ -21,7 +21,7 @@ async function checkAndroid() {
   console.log(`Checking via: ${adbPath}`);
   
   try {
-    const { stdout } = await execAsync(`"${adbPath}" devices -l`);
+    const { stdout } = await execFileAsync(adbPath, ["devices", "-l"]);
     const lines = stdout.trim().split('\n');
     const devices = lines.slice(1).filter(l => l.trim().length > 0);
     

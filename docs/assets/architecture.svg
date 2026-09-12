@@ -118,7 +118,7 @@
 <path d="M886 356H972" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
 <text x="931" y="348" fill="#94A3B8">SQL</text>
 <path d="M886 484H972" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
-<text x="931" y="476" fill="#94A3B8">exec</text>
+<text x="931" y="476" fill="#94A3B8">execFile</text>
 <path d="M886 650H972" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
 <text x="931" y="642" fill="#94A3B8">adb</text>
 </g>
