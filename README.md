@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="File System Engine: Dual-pane file manager with a treemap disk analyzer" width="100%" />
+  <img src="docs/assets/banner.svg" alt="File System Engine: dual-pane file manager with a treemap disk analyzer" width="100%" />
 </p>
 
 <p align="center"><strong>A desktop file manager that moves files between drives, folders and Android phones in two panes, and shows where your disk space goes with a treemap analyzer.</strong></p>
 
 <p align="center">
   <a href="https://trupalpatel.com/projects/file-system-engine"><img src="https://img.shields.io/badge/Case_study-trupalpatel.com-38BDF8?style=flat-square&amp;labelColor=050505" alt="Case study" /></a>
-  <a href="https://github.com/TRUPALIX9/file-system-engine/actions/workflows/ci.yml"><img src="https://github.com/TRUPALIX9/file-system-engine/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/TRUPALIX9/file-system-engine/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/TRUPALIX9/file-system-engine/ci.yml?branch=main&amp;style=flat-square&amp;label=CI" alt="CI" /></a>
   <img src="https://img.shields.io/badge/Electron_41-47848F?style=flat-square&amp;logo=electron&amp;logoColor=white" alt="Electron 41" />
   <img src="https://img.shields.io/badge/React_19-20232A?style=flat-square&amp;logo=react&amp;logoColor=61DAFB" alt="React 19" />
   <img src="https://img.shields.io/badge/MUI_9-007FFF?style=flat-square&amp;logo=mui&amp;logoColor=white" alt="MUI 9" />
