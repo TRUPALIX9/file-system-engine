@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="fse-t fse-d">
+<title id="fse-t">File System Engine: Explorer</title>
+<desc id="fse-d">The File System Engine window in its dark theme on the Explorer tab, browsing an Android phone named Pixel 8 over adb at sdcard, DCIM, Camera, with 18 site photos and videos listed by name, kind and size. The Select Drive menu is open and lists System, Home, Downloads, Documents, Desktop, the Studio Archive drive and the Pixel 8. Fictional demo data.</desc>
+<defs>
+<linearGradient id="fse-cv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B1322"/><stop offset="1" stop-color="#0E1B2E"/></linearGradient>
+<radialGradient id="fse-glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(900 180) scale(720 520)"><stop offset="0" stop-color="#38BDF8" stop-opacity="0.12"/><stop offset="1" stop-color="#38BDF8" stop-opacity="0"/></radialGradient>
+<filter id="fse-sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000" flood-opacity="0.45"/></filter>
+<filter id="fse-btn" x="-10%" y="-20%" width="120%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-color="#000" flood-opacity="0.35"/></filter>
+<filter id="fse-logo-sh" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/></filter>
+<filter id="fse-pop" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#000" flood-opacity="0.35"/></filter>
+<filter id="fse-card" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000" flood-opacity="0.4"/></filter>
+</defs>
+<rect width="1280" height="800" fill="url(#fse-cv)"/>
+<rect width="1280" height="800" fill="url(#fse-glow)"/>
+<rect x="40" y="40" width="1200" height="720" rx="8" fill="#0F172A" filter="url(#fse-sh)"/>
+<clipPath id="fse-win"><rect x="40" y="40" width="1200" height="720" rx="8"/></clipPath>
+<g clip-path="url(#fse-win)" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<rect x="40" y="40" width="1200" height="720" fill="#0F172A"/>
+<rect x="40" y="40" width="1200" height="32" fill="#23272E"/>
+<path d="M40 71.5H1240" stroke="#0B0D11"/>
+<circle cx="60" cy="56" r="6" fill="#4B515B"/>
+<circle cx="80" cy="56" r="6" fill="#4B515B"/>
+<circle cx="100" cy="56" r="6" fill="#4B515B"/>
+<text x="640.00" y="60.50" font-size="13" font-weight="600" text-anchor="middle" fill="rgba(255,255,255,0.78)">File System Engine</text>
+<rect x="40" y="72" width="240" height="688" fill="#1E293B"/>
+<path d="M279.5 72V760" stroke="rgba(255,255,255,0.12)"/>
+<rect x="56" y="88" width="32" height="32" rx="8" fill="#0F172A" filter="url(#fse-logo-sh)"/>
+<g transform="translate(61 93) scale(0.34375)"><rect x="4" y="4" width="56" height="56" rx="13" fill="#0F172A"/>
+<path d="M14 22C14 19.7909 15.7909 18 18 18H26.1228C27.4385 18 28.6678 18.6527 29.4032 19.7428L31.3496 22.625H46C48.2091 22.625 50 24.4159 50 26.625V41C50 43.2091 48.2091 45 46 45H18C15.7909 45 14 43.2091 14 41V22Z" fill="#E2E8F0"/>
+<rect x="20" y="27" width="24" height="14" rx="3" fill="#0F172A" stroke="#38BDF8" stroke-width="1.8"/>
+<rect x="23" y="30" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<rect x="29" y="30" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<rect x="35" y="30" width="4" height="3.5" rx="1" fill="#14B8A6"/>
+<rect x="23" y="35" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<path d="M29 36.75H39" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round"/></g>
+<text x="100.00" y="100.00" font-size="12.8" font-weight="900" letter-spacing="-0.3" fill="#FFFFFF">File System Engine</text>
+<text x="100.00" y="116.00" font-size="10.4" fill="rgba(255,255,255,0.5)">v0.1.0-Stable</text>
+<path d="M40 136.5H279" stroke="rgba(255,255,255,0.12)"/>
+<clipPath id="fse-side"><rect x="40" y="145" width="239" height="451"/></clipPath>
+<g clip-path="url(#fse-side)">
+<text x="64.00" y="165.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(255,255,255,0.5)">SYSTEM</text>
+<g transform="translate(64.00 189.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="203.80" font-size="13.6" fill="#FFFFFF">System</text>
+<text x="64.00" y="249.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(255,255,255,0.5)">QUICK ACCESS</text>
+<g transform="translate(64.00 273.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="287.80" font-size="13.6" fill="#FFFFFF">Home</text>
+<g transform="translate(64.00 317.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="331.80" font-size="13.6" fill="#FFFFFF">Downloads</text>
+<path transform="translate(64.00 361.00) scale(0.8333)" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8zm2 16H8v-2h8zm0-4H8v-2h8zm-3-5V3.5L18.5 9z" fill="#FFFFFF"/>
+<text x="100.00" y="375.80" font-size="13.6" fill="#FFFFFF">Documents</text>
+<path transform="translate(64.00 405.00) scale(0.8333)" d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2M8 20H4v-4h4zm0-6H4v-4h4zm0-6H4V4h4zm6 12h-4v-4h4zm0-6h-4v-4h4zm0-6h-4V4h4zm6 12h-4v-4h4zm0-6h-4v-4h4zm0-6h-4V4h4z" fill="#FFFFFF"/>
+<text x="100.00" y="419.80" font-size="13.6" fill="#FFFFFF">Desktop</text>
+<text x="64.00" y="465.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(255,255,255,0.5)">DEVICES</text>
+<g transform="rotate(180 244 461)"><g transform="translate(237.00 454.00) scale(0.5833)" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.25L6.75 10.5M12 5.25L17.25 10.5M12 5.25V18.75"/></g></g>
+<rect x="48" y="477" width="224" height="44" rx="8" fill="#38BDF8" fill-opacity="0.15"/>
+<g transform="translate(64.00 489.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8.25H19.5V15.75H4.5V8.25ZM7.5 15.75V18H16.5V15.75M16.5 12.75H16.5075M13.5 12.75H13.5075"/></g>
+<text x="100.00" y="503.80" font-size="13.6" fill="#FFFFFF">Studio Archive</text>
+<rect x="48" y="521" width="224" height="44" rx="8" fill="#38BDF8" fill-opacity="0.15"/>
+<g transform="translate(64.00 533.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 7.5L6.75 5.25M15.75 7.5L17.25 5.25M8.25 7.5H15.75C16.9926 7.5 18 8.50736 18 9.75V15C18 16.2426 16.9926 17.25 15.75 17.25V18.75M8.25 7.5C7.00736 7.5 6 8.50736 6 9.75V15C6 16.2426 7.00736 17.25 8.25 17.25V18.75M9.75 12V12.0075M14.25 12V12.0075M9 18.75H15"/></g>
+<text x="100.00" y="547.80" font-size="13.6" fill="#FFFFFF">Pixel 8</text>
+</g>
+<g transform="translate(64.00 616.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.25H19.5V18.75H4.5V5.25ZM4.5 10.5H11.25V18.75M11.25 5.25V14.25H19.5M11.25 14.25H15.75"/></g>
+<text x="100.00" y="630.80" font-size="13.6" font-weight="700" fill="#FFFFFF">Storage Analyzer</text>
+<g transform="translate(64.00 668.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 8.25H15.75V15.75H8.25V8.25ZM5.25 5.25H12.75V12.75H5.25V5.25ZM11.25 11.25H18.75V18.75H11.25V11.25"/></g>
+<text x="100.00" y="682.80" font-size="13.6" font-weight="700" fill="#FFFFFF">Transfer Hub</text>
+<path transform="translate(64.00 720.00) scale(0.8333)" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6" fill="#FFFFFF"/>
+<text x="100.00" y="734.80" font-size="13.6" font-weight="700" fill="#FFFFFF">Settings</text>
+<clipPath id="fse-pane"><rect x="304" y="96" width="912" height="612"/></clipPath>
+<g clip-path="url(#fse-pane)">
+<rect x="304" y="96" width="912" height="612" fill="#38BDF8" fill-opacity="0.02"/>
+<rect x="304" y="96" width="912" height="45" fill="#1E293B"/>
+<path d="M304 140.5H1216" stroke="rgba(255,255,255,0.12)"/>
+<circle cx="326" cy="118" r="14" fill="#38BDF8" fill-opacity="0.05"/>
+<g transform="translate(317.00 109.00) scale(0.7500)" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<g transform="translate(349.00 109.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.25L6.75 10.5M12 5.25L17.25 10.5M12 5.25V18.75"/></g>
+<path d="M380.5 110V126" stroke="rgba(255,255,255,0.12)"/>
+<text x="397.00" y="122.20" font-size="12" fill="rgba(255,255,255,0.7)">Pixel 8</text>
+<path transform="translate(443.53 111.00) scale(0.5833)" d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="rgba(255,255,255,0.7)"/>
+<text x="465.53" y="122.20" font-size="12" fill="rgba(255,255,255,0.7)">sdcard</text>
+<path transform="translate(512.78 111.00) scale(0.5833)" d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="rgba(255,255,255,0.7)"/>
+<text x="534.78" y="122.20" font-size="12" fill="rgba(255,255,255,0.7)">DCIM</text>
+<path transform="translate(575.59 111.00) scale(0.5833)" d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="rgba(255,255,255,0.7)"/>
+<text x="597.59" y="122.20" font-size="12" font-weight="700" fill="#FFFFFF">Camera</text>
+<circle cx="1194" cy="118" r="14" fill="#38BDF8" fill-opacity="0.1"/>
+<g transform="translate(1185.00 109.00) scale(0.7500)" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 8.25C3.75 7.00736 4.75736 6 6 6H9.7027C10.4179 6 11.0888 6.34053 11.5091 6.91699L12.2584 7.94551C12.6787 8.52197 13.3496 8.8625 14.0648 8.8625H18C19.2426 8.8625 20.25 9.86986 20.25 11.1125V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V8.25ZM12 11.25V16.5M9.375 13.875H14.625"/></g>
+<rect x="304" y="141" width="912" height="39" fill="#0F172A"/>
+<path d="M304 179.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 150.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<text x="368.00" y="164.20" font-size="12" font-weight="700" fill="#FFFFFF">Name</text>
+<path transform="translate(407.84 151.00) scale(0.7500)" d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z" fill="rgba(255,255,255,0.7)"/>
+<text x="656.00" y="164.20" font-size="12" font-weight="700" fill="#FFFFFF">Kind</text>
+<text x="1200.00" y="164.20" font-size="12" font-weight="700" text-anchor="end" fill="#FFFFFF">Size</text>
+<path transform="translate(317.00 189.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 190.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="203.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_152233104.jpg</text>
+<text x="656.00" y="203.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="203.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">3.9 MB</text>
+<path d="M304 218.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 228.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 229.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="242.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_152241876.jpg</text>
+<text x="656.00" y="242.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="242.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">4.2 MB</text>
+<path d="M304 257.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 267.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 268.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="281.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_152307419.jpg</text>
+<text x="656.00" y="281.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="281.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">3.6 MB</text>
+<path d="M304 296.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 306.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 307.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="320.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_152512088.mp4</text>
+<text x="656.00" y="320.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="320.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">148.3 MB</text>
+<path d="M304 335.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 345.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 346.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="359.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_153020731.jpg</text>
+<text x="656.00" y="359.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="359.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">5.1 MB</text>
+<path d="M304 374.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 384.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 385.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="398.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_153044905.jpg</text>
+<text x="656.00" y="398.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="398.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">4.7 MB</text>
+<path d="M304 413.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 423.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 424.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="437.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_153118262.jpg</text>
+<text x="656.00" y="437.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="437.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">3.3 MB</text>
+<path d="M304 452.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 462.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 463.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="476.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_153402557.jpg</text>
+<text x="656.00" y="476.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="476.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">4.4 MB</text>
+<path d="M304 491.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 501.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 502.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="515.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_153455013.mp4</text>
+<text x="656.00" y="515.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="515.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">86.9 MB</text>
+<path d="M304 530.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 540.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 541.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="554.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_154011340.jpg</text>
+<text x="656.00" y="554.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="554.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">2.9 MB</text>
+<path d="M304 569.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 579.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 580.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="593.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_154036982.jpg</text>
+<text x="656.00" y="593.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="593.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">4 MB</text>
+<path d="M304 608.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 618.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 619.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="632.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_154210447.jpg</text>
+<text x="656.00" y="632.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="632.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">3.8 MB</text>
+<path d="M304 647.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 657.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 658.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="671.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_155530126.jpg</text>
+<text x="656.00" y="671.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="671.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">4.9 MB</text>
+<path d="M304 686.5H1216" stroke="#515151"/>
+<path transform="translate(317.00 696.00) scale(0.8333)" d="M19 5v14H5V5zm0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2" fill="rgba(255,255,255,0.7)"/>
+<g transform="translate(368.00 697.00) scale(0.7500)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></g>
+<text x="394.00" y="710.50" font-size="12.8" fill="#FFFFFF">PXL_20260829_155602771.jpg</text>
+<text x="656.00" y="710.20" font-size="12" fill="rgba(255,255,255,0.7)">file</text>
+<text x="1200.00" y="710.20" font-size="12" text-anchor="end" fill="rgba(255,255,255,0.7)">4.6 MB</text>
+<path d="M304 725.5H1216" stroke="#515151"/>
+</g>
+<rect x="312" y="113" width="209" height="428" rx="16" fill="#394352" filter="url(#fse-pop)"/>
+<text x="328.00" y="149.00" font-size="12" font-weight="800" letter-spacing="1" fill="rgba(255,255,255,0.5)">SELECT DRIVE</text>
+<g transform="translate(328.00 186.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="364.00" y="192.00" font-size="14" font-weight="600" fill="#FFFFFF">System</text>
+<text x="364.00" y="210.00" font-size="12" fill="rgba(255,255,255,0.7)">/</text>
+<g transform="translate(328.00 238.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="364.00" y="244.00" font-size="14" font-weight="600" fill="#FFFFFF">Home</text>
+<text x="364.00" y="262.00" font-size="12" fill="rgba(255,255,255,0.7)">/Users/nora</text>
+<g transform="translate(328.00 290.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="364.00" y="296.00" font-size="14" font-weight="600" fill="#FFFFFF">Downloads</text>
+<text x="364.00" y="314.00" font-size="12" fill="rgba(255,255,255,0.7)">/Users/nora/Downloads</text>
+<g transform="translate(328.00 342.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="364.00" y="348.00" font-size="14" font-weight="600" fill="#FFFFFF">Documents</text>
+<text x="364.00" y="366.00" font-size="12" fill="rgba(255,255,255,0.7)">/Users/nora/Documents</text>
+<g transform="translate(328.00 394.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="364.00" y="400.00" font-size="14" font-weight="600" fill="#FFFFFF">Desktop</text>
+<text x="364.00" y="418.00" font-size="12" fill="rgba(255,255,255,0.7)">/Users/nora/Desktop</text>
+<g transform="translate(328.00 446.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="364.00" y="452.00" font-size="14" font-weight="600" fill="#FFFFFF">Studio Archive</text>
+<text x="364.00" y="470.00" font-size="12" fill="rgba(255,255,255,0.7)">/Volumes/Studio Archive</text>
+<rect x="312" y="481" width="209" height="52" fill="#38BDF8" fill-opacity="0.16"/>
+<g transform="translate(328.00 498.00) scale(0.7500)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 7.5L6.75 5.25M15.75 7.5L17.25 5.25M8.25 7.5H15.75C16.9926 7.5 18 8.50736 18 9.75V15C18 16.2426 16.9926 17.25 15.75 17.25V18.75M8.25 7.5C7.00736 7.5 6 8.50736 6 9.75V15C6 16.2426 7.00736 17.25 8.25 17.25V18.75M9.75 12V12.0075M14.25 12V12.0075M9 18.75H15"/></g>
+<text x="364.00" y="504.00" font-size="14" font-weight="600" fill="#FFFFFF">Pixel 8</text>
+<text x="364.00" y="522.00" font-size="12" fill="rgba(255,255,255,0.7)">Android Device</text>
+<rect x="280" y="732" width="960" height="28" fill="#1E293B"/>
+<path d="M280 732.5H1240" stroke="rgba(255,255,255,0.12)"/>
+<text x="296.00" y="750.00" font-size="12" fill="rgba(255,255,255,0.7)">Ready</text>
+<path d="M349.1 740V752" stroke="rgba(255,255,255,0.12)"/>
+<text x="366.11" y="750.00" font-size="12" fill="rgba(255,255,255,0.7)">18 items</text>
+<text x="1224.00" y="750.00" font-size="12" font-weight="700" text-anchor="end" fill="#38BDF8">File System Engine v0.1.0-Stable</text>
+</g>
+<rect x="40.5" y="40.5" width="1199" height="719" rx="7.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.10"/>
+</svg>

@@ -46,8 +46,10 @@ export function createMainWindow(): BrowserWindow {
     mainWindow.webContents.openDevTools();
     void mainWindow.loadURL(devServerUrl);
   } else {
-    // Also open devtools in production for now to help the user see errors as requested
-    mainWindow.webContents.openDevTools();
+    // DevTools stay closed in packaged builds; an unpackaged `npm start` still gets them.
+    if (!app.isPackaged) {
+      mainWindow.webContents.openDevTools();
+    }
     void mainWindow.loadFile(join(app.getAppPath(), "dist/renderer/index.html"));
   }
 

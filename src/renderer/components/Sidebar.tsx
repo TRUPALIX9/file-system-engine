@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
-  Typography, Divider, IconButton
+  Typography, Divider, IconButton, Tooltip
 } from '@mui/material';
 import {
   Settings as SettingsIcon,
@@ -139,9 +139,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <List subheader={
           <Box sx={{ px: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography variant="overline" sx={{ fontWeight: 700, color: 'text.disabled' }}>Devices</Typography>
-            <IconButton size="small" onClick={onRefresh} sx={{ color: 'text.disabled', '&:hover': { color: 'primary.main' } }}>
-              <CustomIcon name="up" size={14} sx={{ transform: 'rotate(180deg)' }} />
-            </IconButton>
+            <Tooltip title="Refresh devices">
+              <IconButton size="small" aria-label="Refresh devices" onClick={onRefresh} sx={{ color: 'text.disabled', '&:hover': { color: 'primary.main' } }}>
+                <CustomIcon name="up" size={14} sx={{ transform: 'rotate(180deg)' }} />
+              </IconButton>
+            </Tooltip>
           </Box>
         }>
           {[

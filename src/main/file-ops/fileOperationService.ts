@@ -1,11 +1,7 @@
 import { shell } from "electron";
-import { cp, mkdir, rename, writeFile } from "node:fs/promises";
-import { dirname, join, posix } from "node:path";
+import { cp, lstat, mkdir, rename, writeFile } from "node:fs/promises";
+import { basename, dirname, join, posix } from "node:path";
 import { randomUUID } from "node:crypto";
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
-
-const execAsync = promisify(exec);
 import type {
   ExecuteOperationPlanRequest,
   ExecuteOperationPlanResult,
@@ -17,7 +13,6 @@ import { DesktopFilesystemProvider } from "@main/providers/DesktopFilesystemProv
 import { AndroidAdbProvider } from "@main/providers/AndroidAdbProvider";
 import { AppError } from "@main/app/AppError";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
-import { getAdbPath } from "@main/devices/adbPath";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
 import { setMacOsTags } from "@main/storage/macTags";
 
@@ -33,6 +28,20 @@ function assertSafeName(name: string): string {
   }
 
   return name;
+}
+
+/** Throws when something already exists at the destination, so moves and renames never clobber it. */
+async function assertDestinationFree(destination: string): Promise<void> {
+  try {
+    await lstat(destination);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return;
+    }
+    throw error;
+  }
+
+  throw new AppError("filesystem-error", `An item named "${basename(destination)}" already exists in the destination folder.`);
 }
 
 export class FileOperationService {
@@ -167,7 +176,7 @@ export class FileOperationService {
           if (sourceRef.providerId !== destRef.providerId) {
              throw new AppError("not-implemented", "Copying between different Android devices is not supported yet.");
           }
-          await execAsync(`adb -s ${(sourceProvider as AndroidAdbProvider).descriptor.serial} shell "cp -r \\"${sourceRef.path}\\" \\"${destRef.path}\\""`);
+          await (sourceProvider as AndroidAdbProvider).copyWithin(sourceRef.path, destRef.path);
           return;
         }
 
@@ -208,9 +217,11 @@ export class FileOperationService {
           return;
         }
 
-        // Standard desktop move
+        // Standard desktop move. fs.rename replaces an existing file on macOS and Linux,
+        // so check the destination first.
         const source = this.resolveRef(sourceRef);
         const destination = this.resolveRef(destRef);
+        await assertDestinationFree(destination);
 
         try {
           await rename(source, destination);
@@ -241,6 +252,7 @@ export class FileOperationService {
 
         const source = this.resolveRef(sourceRef);
         const destination = join(dirname(source), newName);
+        await assertDestinationFree(destination);
         await rename(source, destination);
         return;
       }
@@ -278,9 +290,7 @@ export class FileOperationService {
         const provider = this.registry.get(destRef.providerId);
 
         if (provider.kind === "android-adb") {
-          // No easy way to create empty file via ADB without shell, just touch it
-          const adbPath = await getAdbPath();
-          await execAsync(`${adbPath} -s ${(provider as AndroidAdbProvider).descriptor.serial} shell "touch \\"${destRef.path}\\""`);
+          await (provider as AndroidAdbProvider).createFile(destRef.path);
           return;
         }
 

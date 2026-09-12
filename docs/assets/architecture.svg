@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="fsa-t fsa-d">
+<title id="fsa-t">File System Engine architecture</title>
+<desc id="fsa-d">The Electron app has three parts. The React renderer calls the preload bridge's window.fileSystemEngine API; the preload forwards each call over ipcRenderer.invoke to the main process, which validates it with Zod and returns an IpcResult envelope, and pushes devices:updated events back. The main process reaches local disks and volumes through node:fs, keeps an activity log in SQLite with better-sqlite3, reads Finder tags with the macOS mdls, xattr and plutil tools, and talks to an Android phone with the adb CLI through execFile. Shared IPC channels, types and schemas live in src/shared.</desc>
+<defs>
+<linearGradient id="fsa-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B1322"/><stop offset="1" stop-color="#0F1A2E"/></linearGradient>
+<marker id="fsa-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#38BDF8"/></marker>
+<marker id="fsa-arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#14B8A6"/></marker>
+</defs>
+<rect width="1280" height="720" fill="url(#fsa-bg)"/>
+
+<g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<text x="48" y="64" font-size="26" font-weight="700" fill="#F8FAFC">File System Engine architecture</text>
+<text x="48" y="94" font-size="15" fill="#94A3B8">The main process owns every file, device and database call; the renderer only sees a typed, validated IPC API.</text>
+
+<!-- Group: Electron app -->
+<rect x="48.5" y="124.5" width="859" height="571" rx="14" fill="#38BDF8" fill-opacity="0.025" stroke="#94A3B8" stroke-opacity="0.35" stroke-dasharray="6 6"/>
+<text x="68" y="150" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" letter-spacing="2" fill="#94A3B8">ELECTRON APP</text>
+
+<!-- Renderer -->
+<rect x="72" y="172" width="210" height="292" rx="12" fill="#1E293B" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<text x="92" y="204" font-size="18" font-weight="700" fill="#F8FAFC">Renderer</text>
+<text x="92" y="226" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#38BDF8">React 19 · MUI 9 · Vite 8</text>
+<path d="M92 244.5H262" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<g font-size="13.5" fill="#CBD5E1">
+<text x="92" y="272">Explorer (single pane)</text>
+<text x="92" y="300">Transfer Hub (dual pane)</text>
+<text x="92" y="328">Storage Analyzer treemap</text>
+<text x="92" y="356">Settings: theme, access</text>
+<text x="92" y="384">Sidebar and status bar</text>
+</g>
+<text x="92" y="436" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="11.5" fill="#94A3B8">no Node.js access</text>
+
+<!-- Preload -->
+<rect x="386" y="172" width="180" height="292" rx="12" fill="#1E293B" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<text x="406" y="204" font-size="18" font-weight="700" fill="#F8FAFC">Preload bridge</text>
+<text x="406" y="226" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#38BDF8">contextBridge</text>
+<path d="M406 244.5H546" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<g font-size="13.5" fill="#CBD5E1">
+<text x="406" y="272">window.</text>
+<text x="406" y="290">fileSystemEngine</text>
+<text x="406" y="324">Typed methods</text>
+<text x="406" y="342">per IPC channel</text>
+<text x="406" y="376">contextIsolation,</text>
+<text x="406" y="394">sandbox</text>
+</g>
+
+<!-- Main process -->
+<rect x="670" y="172" width="214" height="504" rx="12" fill="#1E293B" stroke="#38BDF8" stroke-opacity="0.45"/>
+<text x="690" y="204" font-size="18" font-weight="700" fill="#F8FAFC">Main process</text>
+<text x="690" y="226" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#38BDF8">Electron 41 · Node</text>
+<path d="M690 244.5H864" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<g font-size="13.5" fill="#CBD5E1">
+<text x="690" y="272">registerIpc + Zod checks</text>
+<text x="690" y="316">DeviceService</text>
+<text x="690" y="334" font-size="12" fill="#94A3B8">inventory refresh, 10 s</text>
+<text x="690" y="374">ProviderRegistry</text>
+<text x="690" y="400">DesktopFilesystem-</text>
+<text x="690" y="418">Provider</text>
+<text x="690" y="452">FileOperationService</text>
+<text x="690" y="488">StorageAnalysisService</text>
+<text x="690" y="524">AndroidAdbProvider</text>
+<text x="690" y="560">RecordsService</text>
+</g>
+<text x="690" y="648" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="11.5" fill="#94A3B8">IpcResult envelopes</text>
+
+<!-- Shared contracts -->
+<rect x="72" y="496" width="494" height="180" rx="12" fill="#0F172A" stroke="#94A3B8" stroke-opacity="0.25"/>
+<text x="92" y="528" font-size="18" font-weight="700" fill="#F8FAFC">Shared contracts</text>
+<text x="92" y="550" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#14B8A6">src/shared · TypeScript · Zod 4</text>
+<g font-size="13.5" fill="#CBD5E1">
+<text x="92" y="586">IPC channel names and request/response contracts</text>
+<text x="92" y="612">File, provider, operation and analysis types</text>
+<text x="92" y="638">Request schemas, covered by a Vitest check</text>
+</g>
+
+<!-- Arrows inside the app -->
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="10.5" text-anchor="middle">
+<path d="M284 282H382" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
+<text x="334" y="274" fill="#94A3B8">API calls</text>
+<path d="M384 330H288" stroke="#14B8A6" stroke-width="1.6" marker-end="url(#fsa-arrow2)"/>
+<text x="334" y="348" fill="#94A3B8">IpcResult</text>
+<path d="M568 282H666" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
+<text x="618" y="274" fill="#94A3B8">invoke</text>
+<path d="M668 330H572" stroke="#14B8A6" stroke-width="1.6" marker-end="url(#fsa-arrow2)"/>
+<text x="618" y="348" fill="#94A3B8">devices:updated</text>
+</g>
+
+<!-- Group: This computer -->
+<rect x="956.5" y="124.5" width="283" height="436" rx="14" fill="#14B8A6" fill-opacity="0.025" stroke="#94A3B8" stroke-opacity="0.35" stroke-dasharray="6 6"/>
+<text x="976" y="150" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" letter-spacing="2" fill="#94A3B8">THIS COMPUTER</text>
+<rect x="976" y="172" width="244" height="112" rx="12" fill="#1E293B" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<text x="996" y="204" font-size="16" font-weight="700" fill="#F8FAFC">Disks and folders</text>
+<text x="996" y="226" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#14B8A6">node:fs · shell.trashItem</text>
+<text x="996" y="254" font-size="13" fill="#CBD5E1">System, Home, Downloads,</text>
+<text x="996" y="272" font-size="13" fill="#CBD5E1">Documents, Desktop, /Volumes</text>
+<rect x="976" y="300" width="244" height="112" rx="12" fill="#1E293B" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<text x="996" y="332" font-size="16" font-weight="700" fill="#F8FAFC">Activity log</text>
+<text x="996" y="354" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#14B8A6">better-sqlite3</text>
+<text x="996" y="382" font-size="13" fill="#CBD5E1">engine.sqlite in userData:</text>
+<text x="996" y="400" font-size="13" fill="#CBD5E1">scans and file operations</text>
+<rect x="976" y="428" width="244" height="112" rx="12" fill="#1E293B" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<text x="996" y="460" font-size="16" font-weight="700" fill="#F8FAFC">macOS Finder tags</text>
+<text x="996" y="482" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#14B8A6">mdls · xattr · plutil</text>
+<text x="996" y="510" font-size="13" fill="#CBD5E1">Read and write tags</text>
+<text x="996" y="528" font-size="13" fill="#CBD5E1">through execFile</text>
+
+<!-- Group: USB device -->
+<rect x="956.5" y="584.5" width="283" height="111" rx="14" fill="#38BDF8" fill-opacity="0.025" stroke="#94A3B8" stroke-opacity="0.35" stroke-dasharray="6 6"/>
+<text x="976" y="608" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" letter-spacing="2" fill="#94A3B8">USB DEVICE</text>
+<rect x="976" y="620" width="244" height="60" rx="12" fill="#1E293B" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<text x="996" y="646" font-size="16" font-weight="700" fill="#F8FAFC">Android phone</text>
+<text x="996" y="667" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#14B8A6">adb · USB debugging</text>
+
+<!-- Arrows out of the main process -->
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="10" text-anchor="middle">
+<path d="M886 228H972" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
+<text x="931" y="220" fill="#94A3B8">fs</text>
+<path d="M886 356H972" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
+<text x="931" y="348" fill="#94A3B8">SQL</text>
+<path d="M886 484H972" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
+<text x="931" y="476" fill="#94A3B8">execFile</text>
+<path d="M886 650H972" stroke="#38BDF8" stroke-width="1.6" marker-end="url(#fsa-arrow)"/>
+<text x="931" y="642" fill="#94A3B8">adb</text>
+</g>
+</g>
+</svg>

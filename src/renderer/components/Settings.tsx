@@ -36,22 +36,30 @@ export const Settings: React.FC<SettingsProps> = ({
               <Chip 
                 size="small" 
                 label={hasFullDiskAccess === true ? "Access Granted" : hasFullDiskAccess === false ? "Access Restricted" : "Checking..."}
-                color={hasFullDiskAccess === true ? "success" : "error"}
+                color={hasFullDiskAccess === true ? "success" : hasFullDiskAccess === false ? "error" : "default"}
                 variant="filled"
                 sx={{ fontWeight: 700, fontSize: '0.65rem' }}
               />
             )}
           </Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Granting Full Disk Access allows the engine to browse protected system folders and connected drives.
-          </Typography>
-          <Button 
-            variant="outlined" 
-            size="small" 
-            onClick={() => (window as any).fileSystemEngine.app.openExternal({ url: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles" })}
-          >
-            Configure macOS Permissions
-          </Button>
+          {isMac ? (
+            <>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Granting Full Disk Access allows the engine to browse protected system folders and connected drives.
+              </Typography>
+              <Button 
+                variant="outlined" 
+                size="small" 
+                onClick={() => (window as any).fileSystemEngine.app.openExternal({ url: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles" })}
+              >
+                Configure macOS Permissions
+              </Button>
+            </>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              The engine browses drives and folders with your account's normal file permissions. No extra access is needed on this platform.
+            </Typography>
+          )}
         </CardContent>
       </Card>
 

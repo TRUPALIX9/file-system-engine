@@ -1,11 +1,43 @@
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { posix } from "path";
+import { lstat } from "fs/promises";
 import type { StorageProvider } from "./StorageProvider";
 import type { BrowseRequest, BrowseResult, FileEntry, AndroidProviderDescriptor } from "@shared/types";
 import { getAdbPath } from "../devices/adbPath";
 
 const execFileAsync = promisify(execFile);
+
+/**
+ * Quotes one argument for the device-side shell that `adb shell` runs.
+ * Single quotes stop $(...), backticks and $VAR from expanding on the phone.
+ */
+export function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+/** Printed by the device when a destination is already taken (stdout, so it works even where adb drops exit codes). */
+export const EXISTS_MARKER = "__FSE_DESTINATION_EXISTS__";
+
+/**
+ * Wraps a device command so it only runs when `destination` is free. Plain `mv`/`cp -r` onto an
+ * existing folder would nest the item inside it, and `mv -n` silently does nothing.
+ */
+export function unlessExists(destination: string, command: string): string {
+  const quoted = shellQuote(destination);
+  return `if [ -e ${quoted} ] || [ -L ${quoted} ]; then echo ${EXISTS_MARKER}; else ${command}; fi`;
+}
+
+function destinationTaken(path: string, where: string): Error {
+  return new Error(`An item named "${posix.basename(path)}" already exists ${where}.`);
+}
+
+/** Runs a command on the device through execFile, so the host shell is never involved. */
+export async function adbShell(serial: string, command: string): Promise<string> {
+  const adbPath = await getAdbPath();
+  const { stdout } = await execFileAsync(adbPath, ["-s", serial, "shell", command], { maxBuffer: 64 * 1024 * 1024 });
+  return stdout;
+}
 
 export class AndroidAdbProvider implements StorageProvider {
   constructor(public readonly descriptor: AndroidProviderDescriptor) { }
@@ -25,17 +57,12 @@ export class AndroidAdbProvider implements StorageProvider {
 
     const directoryPath = request.location.path;
     try {
-      const adbPath = await getAdbPath();
       // Add trailing slash to force listing contents if it's a symlink (like /sdcard)
       const normalizedPath = directoryPath.endsWith('/') ? directoryPath : `${directoryPath}/`;
       
       console.log(`Android Provider: Browsing "${normalizedPath}" on device ${this.descriptor.serial}`);
       
-      // Use execFile with array of arguments to avoid shell injection and escaping issues
-      const { stdout } = await execFileAsync(adbPath, [
-        "-s", this.descriptor.serial, 
-        "shell", `ls -la "${normalizedPath}"`
-      ]);
+      const stdout = await adbShell(this.descriptor.serial, `ls -la -- ${shellQuote(normalizedPath)}`);
       
       const lines = stdout.split('\n').map(l => l.trim()).filter(Boolean);
       console.log(`Android Provider: Received ${lines.length} lines of output.`);
@@ -125,6 +152,14 @@ export class AndroidAdbProvider implements StorageProvider {
     if (this.descriptor.authorizationState !== "authorized") {
       throw new Error("Device not authorized for pull.");
     }
+    // adb pull overwrites a local file (and nests into a local folder), so refuse a taken name.
+    const localTaken = await lstat(localPath).then(() => true, (error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") return false;
+      throw error;
+    });
+    if (localTaken) {
+      throw destinationTaken(localPath, "in the destination folder");
+    }
     try {
       const adbPath = await getAdbPath();
       await execFileAsync(adbPath, ["-s", this.descriptor.serial, "pull", androidPath, localPath]);
@@ -136,6 +171,11 @@ export class AndroidAdbProvider implements StorageProvider {
   async push(localPath: string, androidPath: string): Promise<void> {
     if (this.descriptor.authorizationState !== "authorized") {
       throw new Error("Device not authorized for push.");
+    }
+    // adb push overwrites a device file (and nests into a device folder), so refuse a taken name.
+    const check = await adbShell(this.descriptor.serial, unlessExists(androidPath, "true"));
+    if (check.includes(EXISTS_MARKER)) {
+      throw destinationTaken(androidPath, "on the device");
     }
     try {
       const adbPath = await getAdbPath();
@@ -150,8 +190,7 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for delete.");
     }
     try {
-      const adbPath = await getAdbPath();
-      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `rm -rf "${androidPath}"`]);
+      await adbShell(this.descriptor.serial, `rm -rf -- ${shellQuote(androidPath)}`);
     } catch (error: any) {
       throw new Error(`ADB delete failed: ${error.message}`);
     }
@@ -161,11 +200,40 @@ export class AndroidAdbProvider implements StorageProvider {
     if (this.descriptor.authorizationState !== "authorized") {
       throw new Error("Device not authorized for rename.");
     }
+    let stdout: string;
     try {
-      const adbPath = await getAdbPath();
-      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `mv "${oldPath}" "${newPath}"`]);
+      stdout = await adbShell(this.descriptor.serial, unlessExists(newPath, `mv -- ${shellQuote(oldPath)} ${shellQuote(newPath)}`));
     } catch (error: any) {
       throw new Error(`ADB rename failed: ${error.message}`);
+    }
+    if (stdout.includes(EXISTS_MARKER)) {
+      throw destinationTaken(newPath, "on the device");
+    }
+  }
+
+  async copyWithin(sourcePath: string, destinationPath: string): Promise<void> {
+    if (this.descriptor.authorizationState !== "authorized") {
+      throw new Error("Device not authorized for copy.");
+    }
+    let stdout: string;
+    try {
+      stdout = await adbShell(this.descriptor.serial, unlessExists(destinationPath, `cp -r -- ${shellQuote(sourcePath)} ${shellQuote(destinationPath)}`));
+    } catch (error: any) {
+      throw new Error(`ADB copy failed: ${error.message}`);
+    }
+    if (stdout.includes(EXISTS_MARKER)) {
+      throw destinationTaken(destinationPath, "on the device");
+    }
+  }
+
+  async createFile(androidPath: string): Promise<void> {
+    if (this.descriptor.authorizationState !== "authorized") {
+      throw new Error("Device not authorized for file creation.");
+    }
+    try {
+      await adbShell(this.descriptor.serial, `touch -- ${shellQuote(androidPath)}`);
+    } catch (error: any) {
+      throw new Error(`ADB touch failed: ${error.message}`);
     }
   }
 
@@ -174,8 +242,7 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for directory creation.");
     }
     try {
-      const adbPath = await getAdbPath();
-      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `mkdir -p "${androidPath}"`]);
+      await adbShell(this.descriptor.serial, `mkdir -p -- ${shellQuote(androidPath)}`);
     } catch (error: any) {
       throw new Error(`ADB mkdir failed: ${error.message}`);
     }

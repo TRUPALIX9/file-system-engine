@@ -20,6 +20,15 @@ import { StorageAnalysisService } from "@main/storage/storageAnalysisService";
 import { recordsService } from "@main/database/recordsService";
 import { detectAndroidDevices } from "./adbDetector";
 
+/** Activity logging is best effort: a database failure must never fail work that already happened. */
+function recordActivity(record: Parameters<typeof recordsService.addRecord>[0]): void {
+  try {
+    recordsService.addRecord(record);
+  } catch (error) {
+    console.error("DeviceService: could not write the activity record:", error);
+  }
+}
+
 async function existingKnownFolders(): Promise<MountedFilesystemDescriptor[]> {
   const home = homedir();
   const candidates = [
@@ -92,7 +101,7 @@ export class DeviceService {
 
     const result = await this.storageAnalysis.analyze(request);
     
-    recordsService.addRecord({
+    recordActivity({
       kind: "scan",
       description: `Analyzed storage at ${request.root.path}`,
       details: { totalBytes: result.totalBytes, fileCount: result.fileCount }
@@ -119,7 +128,7 @@ export class DeviceService {
 
     const result = await this.fileOperations.executePlan(request);
     
-    recordsService.addRecord({
+    recordActivity({
       kind: "operation",
       description: `Executed ${request.operations.length} file operation(s)`,
       details: { operations: request.operations.map(o => o.kind), status: result.status }

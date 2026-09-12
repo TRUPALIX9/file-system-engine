@@ -1,14 +1,14 @@
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import type { AndroidProviderDescriptor, AndroidAuthorizationState, AndroidTransportState } from "@shared/types";
 import { getAdbPath } from "./adbPath";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export async function detectAndroidDevices(): Promise<AndroidProviderDescriptor[]> {
   try {
     const adbPath = await getAdbPath();
-    const { stdout } = await execAsync(`${adbPath} devices -l`);
+    const { stdout } = await execFileAsync(adbPath, ["devices", "-l"]);
     const lines = stdout.split('\n').map(line => line.trim()).filter(Boolean);
     
     // First line is usually "List of devices attached"

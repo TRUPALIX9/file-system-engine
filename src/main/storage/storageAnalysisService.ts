@@ -1,8 +1,6 @@
 import { lstat, readdir } from "node:fs/promises";
 import type { Dirent } from "node:fs";
-import { basename, extname, join, posix } from "node:path";
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
+import { basename, dirname, extname, join, posix } from "node:path";
 import type {
   FileEntry,
   FolderSizeSummary,
@@ -16,9 +14,7 @@ import { AppError } from "@main/app/AppError";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
 import type { AndroidProviderDescriptor } from "@shared/types";
-import { getAdbPath } from "@main/devices/adbPath";
-
-const execAsync = promisify(exec);
+import { adbShell, shellQuote } from "@main/providers/AndroidAdbProvider";
 
 const TREEMAP_COLORS = ["#2b6f73", "#7c5b21", "#4f6f52", "#8a4f61", "#4d5f82", "#83613b"];
 
@@ -29,6 +25,41 @@ function normalizeName(name: string): string {
     .replace(/\b(copy|final|version|v\d+)\b/g, "")
     .replace(/[-_\s]+/g, " ")
     .trim();
+}
+
+/**
+ * Treemap blocks are the root's immediate child folders, so they never overlap and their
+ * widths add up to at most the scanned total. `cumulative` says whether each summary's size
+ * already includes its subfolders (desktop walk) or only its own files (adb ls -lR blocks).
+ */
+function buildTreemapItems(
+  summaries: FolderSizeSummary[],
+  rootPath: string,
+  parentOf: (path: string) => string,
+  cumulative: boolean
+): TreemapItem[] {
+  const children = summaries.filter((folder) => folder.path !== rootPath && parentOf(folder.path) === rootPath);
+
+  return children
+    .map((child) => ({
+      ...child,
+      sizeBytes: cumulative
+        ? child.sizeBytes
+        : summaries
+            .filter((folder) => folder.path === child.path || folder.path.startsWith(`${child.path}/`))
+            .reduce((sum, folder) => sum + folder.sizeBytes, 0)
+    }))
+    .filter((child) => child.sizeBytes > 0)
+    .sort((left, right) => right.sizeBytes - left.sizeBytes)
+    .slice(0, 18)
+    .map((folder, index) => ({
+      id: folder.path,
+      label: folder.name,
+      path: folder.path,
+      kind: "directory",
+      sizeBytes: folder.sizeBytes,
+      color: TREEMAP_COLORS[index % TREEMAP_COLORS.length]
+    }));
 }
 
 function makeFileEntry(providerId: string, providerKind: StorageProviderKind, path: string, name: string, size: number, modifiedAt: Date): FileEntry {
@@ -168,14 +199,7 @@ export class StorageAnalysisService {
     }
 
     const redundantCandidates = this.findRedundantCandidates(files);
-    const treemapItems: TreemapItem[] = largestDirectories.slice(0, 18).map((folder, index) => ({
-      id: folder.path,
-      label: folder.name,
-      path: folder.path,
-      kind: "directory",
-      sizeBytes: folder.sizeBytes,
-      color: TREEMAP_COLORS[index % TREEMAP_COLORS.length]
-    }));
+    const treemapItems = buildTreemapItems(folderSummaries, rootPath, dirname, true);
 
     return {
       root: {
@@ -215,8 +239,7 @@ export class StorageAnalysisService {
 
     try {
       // Use adb shell ls -lR for recursive listing
-      const adbPath = await getAdbPath();
-      const { stdout } = await execAsync(`${adbPath} -s ${descriptor.serial} shell "ls -lR \\"${rootPath}\\""`);
+      const stdout = await adbShell(descriptor.serial, `ls -lR -- ${shellQuote(rootPath)}`);
       const blocks = stdout.split('\n\n');
       
       for (const block of blocks) {
@@ -294,14 +317,7 @@ export class StorageAnalysisService {
       extensionMap.set(extension, current);
     }
 
-    const treemapItems: TreemapItem[] = largestDirectories.slice(0, 18).map((folder, index) => ({
-      id: folder.path,
-      label: folder.name,
-      path: folder.path,
-      kind: "directory",
-      sizeBytes: folder.sizeBytes,
-      color: TREEMAP_COLORS[index % TREEMAP_COLORS.length]
-    }));
+    const treemapItems = buildTreemapItems(folderSummaries, rootPath.replace(/\/+$/, "") || "/", posix.dirname, false);
 
     return {
       root: {

@@ -1,4 +1,4 @@
-import { ipcMain, shell, BrowserWindow } from "electron";
+import { ipcMain, shell, BrowserWindow, dialog } from "electron";
 import { randomUUID } from "node:crypto";
 import { IPC_CHANNELS, type IpcContractMap } from "@shared/ipc";
 import {
@@ -112,7 +112,6 @@ export function registerIpcHandlers(): void {
   });
 
   handle(IPC_CHANNELS.appShowOpenDialog, async (request) => {
-    const { dialog } = require("electron");
     const result = await dialog.showOpenDialog({
       properties: request.properties,
       title: request.title,

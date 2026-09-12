@@ -3,7 +3,7 @@ import {
   Box, Typography, IconButton, Button, Table, TableBody, 
   TableCell, TableContainer, TableHead, TableRow, alpha, 
   Breadcrumbs, Link, styled, useTheme, Fade, CircularProgress,
-  Divider, Menu, MenuItem, ListItemIcon, Checkbox, TableSortLabel
+  Divider, Menu, MenuItem, ListItemIcon, Checkbox, TableSortLabel, Tooltip
 } from '@mui/material';
 import {
   ChevronRight as ChevronRightIcon,
@@ -35,7 +35,7 @@ interface FilePaneProps {
   onSelectEntries: (entries: FileEntry[]) => void;
   onOpenEntry: (entry: FileEntry, pane: 'left' | 'right') => void;
   onNavigateTo: (path: string, pane: 'left' | 'right') => void;
-  onContextMenu: (e: React.MouseEvent, entry: FileEntry) => void;
+  onContextMenu: (e: React.MouseEvent, entry: FileEntry, pane: 'left' | 'right') => void;
   onNewFolder: () => void;
   globalError: string | null;
   focusedPane: 'left' | 'right';
@@ -108,6 +108,28 @@ export const FilePane: React.FC<FilePaneProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   };
 
+  // Parent of the listed folder, clamped to the provider root; null at the root (Up disabled).
+  const parentPath = React.useMemo(() => {
+    if (!currentListing?.directory || !currentProvider) return null;
+    const rootPath = currentProvider.kind === 'desktop-filesystem' ? currentProvider.mountPath : '/';
+    const stripTrailing = (value: string) => (value.length > 1 ? value.replace(/[\\/]+$/, '') : value);
+    const current = stripTrailing(currentListing.directory.path);
+    const root = stripTrailing(rootPath);
+    if (current.length <= root.length) return null;
+    const cut = Math.max(current.lastIndexOf('/'), current.lastIndexOf('\\'));
+    if (cut < 0) return null;
+    let parent = current.slice(0, cut) || '/';
+    if (/^[A-Za-z]:$/.test(parent)) parent += '\\';
+    return stripTrailing(parent).length < root.length ? rootPath : parent;
+  }, [currentListing, currentProvider]);
+
+  const toggleEntry = (entry: FileEntry) => {
+    const isAlreadySelected = selectedEntries.some(se => se.ref.path === entry.ref.path);
+    onSelectEntries(isAlreadySelected
+      ? selectedEntries.filter(se => se.ref.path !== entry.ref.path)
+      : [...selectedEntries, entry]);
+  };
+
   const handleRowClick = (e: React.MouseEvent, entry: FileEntry) => {
     if (e.ctrlKey || e.metaKey) {
       const isAlreadySelected = selectedEntries.some(se => se.ref.path === entry.ref.path);
@@ -150,21 +172,25 @@ export const FilePane: React.FC<FilePaneProps> = ({
     }
 
     return (
-      <Breadcrumbs separator={<ChevronRightIcon sx={{ fontSize: 14 }} />} sx={{ ml: 1 }}>
+      <Breadcrumbs aria-label="Current folder" separator={<ChevronRightIcon sx={{ fontSize: 14 }} />} sx={{ ml: 1 }}>
         {crumbs.map((crumb, idx) => (
-          <Typography
+          <Link
             key={crumb.path}
+            component="button"
+            type="button"
             variant="caption"
+            underline="hover"
+            aria-current={idx === crumbs.length - 1 ? 'location' : undefined}
             sx={{ 
               cursor: 'pointer',
               fontWeight: idx === crumbs.length - 1 ? 700 : 400,
               color: idx === crumbs.length - 1 ? "text.primary" : "text.secondary",
-              '&:hover': { color: 'primary.main', textDecoration: 'underline' }
+              '&:hover': { color: 'primary.main' }
             }}
-            onClick={(e: any) => { e.stopPropagation(); onNavigateTo(crumb.path, pane); }}
+            onClick={(e: React.MouseEvent) => { e.stopPropagation(); onNavigateTo(crumb.path, pane); }}
           >
             {crumb.name}
-          </Typography>
+          </Link>
         ))}
       </Breadcrumbs>
     );
@@ -191,36 +217,49 @@ export const FilePane: React.FC<FilePaneProps> = ({
         bgcolor: 'background.paper'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <IconButton 
-            size="small" 
-            onClick={(e) => setDriveMenuAnchor(e.currentTarget)}
-            sx={{ 
-              color: 'primary.main',
-              bgcolor: alpha(theme.palette.primary.main, 0.05),
-              '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.15) }
-            }}
-          >
-            <CustomIcon name="storage" size={18} />
-          </IconButton>
-          <IconButton size="small" onClick={() => onNavigateTo("..", pane)} disabled={!currentListing}>
-            <CustomIcon name="up" size={18} />
-          </IconButton>
+          <Tooltip title="Select drive">
+            <IconButton 
+              size="small" 
+              aria-label="Select drive"
+              aria-haspopup="menu"
+              onClick={(e) => setDriveMenuAnchor(e.currentTarget)}
+              sx={{ 
+                color: 'primary.main',
+                bgcolor: alpha(theme.palette.primary.main, 0.05),
+                '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.15) }
+              }}
+            >
+              <CustomIcon name="storage" size={18} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Up one level">
+            <span>
+              <IconButton size="small" aria-label="Up one level" onClick={() => parentPath && onNavigateTo(parentPath, pane)} disabled={!parentPath}>
+                <CustomIcon name="up" size={18} />
+              </IconButton>
+            </span>
+          </Tooltip>
         </Box>
         <Divider orientation="vertical" flexItem sx={{ mx: 1, height: 16, my: 'auto' }} />
         {renderBreadcrumbs()}
         <Box sx={{ flex: 1 }} />
-        <IconButton 
-          size="small" 
-          color="primary"
-          disabled={!currentProvider?.capabilities.canCreateFolder} 
-          onClick={onNewFolder}
-          sx={{ 
-            bgcolor: alpha(theme.palette.primary.main, 0.1),
-            '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
-          }}
-        >
-          <CustomIcon name="create-folder" size={18} />
-        </IconButton>
+        <Tooltip title="New folder">
+          <span>
+            <IconButton 
+              size="small" 
+              color="primary"
+              aria-label="New folder"
+              disabled={!currentListing || !currentProvider?.capabilities.canCreateFolder} 
+              onClick={onNewFolder}
+              sx={{ 
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
+              }}
+            >
+              <CustomIcon name="create-folder" size={18} />
+            </IconButton>
+          </span>
+        </Tooltip>
 
         <Menu
           anchorEl={driveMenuAnchor}
@@ -326,6 +365,7 @@ export const FilePane: React.FC<FilePaneProps> = ({
                   <TableCell padding="checkbox" sx={{ width: 48 }}>
                     <Checkbox
                       size="small"
+                      slotProps={{ input: { 'aria-label': 'Select all items' } }}
                       indeterminate={selectedEntries.length > 0 && selectedEntries.length < (currentListing?.entries.length || 0)}
                       checked={currentListing?.entries.length ? selectedEntries.length === currentListing.entries.length : false}
                       onChange={(e) => {
@@ -373,21 +413,25 @@ export const FilePane: React.FC<FilePaneProps> = ({
                     <StyledTableRow 
                       key={entry.ref.path}
                       selected={isSelected}
+                      tabIndex={0}
+                      aria-selected={isSelected}
                       onClick={(e) => handleRowClick(e, entry)}
                       onDoubleClick={() => onOpenEntry(entry, pane)}
-                      onContextMenu={(e) => onContextMenu(e, entry)}
+                      onKeyDown={(e) => {
+                        if (e.target !== e.currentTarget) return;
+                        if (e.key === 'Enter') { e.preventDefault(); onOpenEntry(entry, pane); }
+                        if (e.key === ' ') { e.preventDefault(); toggleEntry(entry); }
+                      }}
+                      onContextMenu={(e) => { e.preventDefault(); onContextMenu(e, entry, pane); }}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
                           size="small"
                           checked={isSelected}
+                          slotProps={{ input: { 'aria-label': `Select ${entry.name}` } }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (isSelected) {
-                              onSelectEntries(selectedEntries.filter(se => se.ref.path !== entry.ref.path));
-                            } else {
-                              onSelectEntries([...selectedEntries, entry]);
-                            }
+                            toggleEntry(entry);
                           }}
                         />
                       </TableCell>
