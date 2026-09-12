@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { IPC_CHANNELS } from "@shared/ipc";
+import { IPC_CHANNELS, IPC_EVENT_CHANNELS } from "@shared/ipc";
 import { browseRequestSchema, executeOperationPlanRequestSchema, ipcRequestSchemas } from "./ipcSchemas";
 
 describe("ipc request schemas", () => {
@@ -29,8 +29,10 @@ describe("ipc request schemas", () => {
     expect(result.success).toBe(false);
   });
 
-  it("keeps every declared IPC channel covered by a schema", () => {
-    expect(Object.keys(ipcRequestSchemas).sort()).toEqual(Object.values(IPC_CHANNELS).sort());
+  it("keeps every declared invoke channel covered by a schema", () => {
+    const eventChannels: readonly string[] = IPC_EVENT_CHANNELS;
+    const invokeChannels = Object.values(IPC_CHANNELS).filter((channel) => !eventChannels.includes(channel));
+    expect(Object.keys(ipcRequestSchemas).sort()).toEqual(invokeChannels.sort());
   });
 
   it("rejects a delete operation without an explicit source", () => {

@@ -14,4 +14,7 @@ export const IPC_CHANNELS = {
   devicesUpdated: "devices:updated"
 } as const;
 
+/** Main-to-renderer push channels. They carry no request, so they have no request schema. */
+export const IPC_EVENT_CHANNELS = [IPC_CHANNELS.devicesUpdated] as const;
+
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
