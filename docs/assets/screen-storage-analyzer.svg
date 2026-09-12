@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="fsz-t fsz-d">
+<title id="fsz-t">File System Engine: Storage Analyzer</title>
+<desc id="fsz-d">The Storage Analyzer tab after scanning /Users/nora/Documents: 41.37 GB in 12,486 files and 1,318 directories, with the Visual Breakdown treemap strip sizing each top-level folder by its share of the total, led by Revit Models, Kestrel Bay and Renders Archive. Fictional demo data.</desc>
+<defs>
+<linearGradient id="fsz-cv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B1322"/><stop offset="1" stop-color="#0E1B2E"/></linearGradient>
+<radialGradient id="fsz-glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(900 180) scale(720 520)"><stop offset="0" stop-color="#38BDF8" stop-opacity="0.12"/><stop offset="1" stop-color="#38BDF8" stop-opacity="0"/></radialGradient>
+<filter id="fsz-sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000" flood-opacity="0.45"/></filter>
+<filter id="fsz-btn" x="-10%" y="-20%" width="120%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-color="#000" flood-opacity="0.35"/></filter>
+<filter id="fsz-logo-sh" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/></filter>
+<filter id="fsz-pop" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#000" flood-opacity="0.35"/></filter>
+<filter id="fsz-card" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000" flood-opacity="0.4"/></filter>
+</defs>
+<rect width="1280" height="800" fill="url(#fsz-cv)"/>
+<rect width="1280" height="800" fill="url(#fsz-glow)"/>
+<rect x="40" y="40" width="1200" height="720" rx="8" fill="#0F172A" filter="url(#fsz-sh)"/>
+<clipPath id="fsz-win"><rect x="40" y="40" width="1200" height="720" rx="8"/></clipPath>
+<g clip-path="url(#fsz-win)" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<rect x="40" y="40" width="1200" height="720" fill="#0F172A"/>
+<rect x="40" y="40" width="1200" height="32" fill="#23272E"/>
+<path d="M40 71.5H1240" stroke="#0B0D11"/>
+<circle cx="60" cy="56" r="6" fill="#4B515B"/>
+<circle cx="80" cy="56" r="6" fill="#4B515B"/>
+<circle cx="100" cy="56" r="6" fill="#4B515B"/>
+<text x="640.00" y="60.50" font-size="13" font-weight="600" text-anchor="middle" fill="rgba(255,255,255,0.78)">File System Engine</text>
+<rect x="40" y="72" width="240" height="688" fill="#1E293B"/>
+<path d="M279.5 72V760" stroke="rgba(255,255,255,0.12)"/>
+<rect x="56" y="88" width="32" height="32" rx="8" fill="#0F172A" filter="url(#fsz-logo-sh)"/>
+<g transform="translate(61 93) scale(0.34375)"><rect x="4" y="4" width="56" height="56" rx="13" fill="#0F172A"/>
+<path d="M14 22C14 19.7909 15.7909 18 18 18H26.1228C27.4385 18 28.6678 18.6527 29.4032 19.7428L31.3496 22.625H46C48.2091 22.625 50 24.4159 50 26.625V41C50 43.2091 48.2091 45 46 45H18C15.7909 45 14 43.2091 14 41V22Z" fill="#E2E8F0"/>
+<rect x="20" y="27" width="24" height="14" rx="3" fill="#0F172A" stroke="#38BDF8" stroke-width="1.8"/>
+<rect x="23" y="30" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<rect x="29" y="30" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<rect x="35" y="30" width="4" height="3.5" rx="1" fill="#14B8A6"/>
+<rect x="23" y="35" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<path d="M29 36.75H39" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round"/></g>
+<text x="100.00" y="100.00" font-size="12.8" font-weight="900" letter-spacing="-0.3" fill="#FFFFFF">File System Engine</text>
+<text x="100.00" y="116.00" font-size="10.4" fill="rgba(255,255,255,0.5)">v0.1.0-Stable</text>
+<path d="M40 136.5H279" stroke="rgba(255,255,255,0.12)"/>
+<clipPath id="fsz-side"><rect x="40" y="145" width="239" height="451"/></clipPath>
+<g clip-path="url(#fsz-side)">
+<text x="64.00" y="165.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(255,255,255,0.5)">SYSTEM</text>
+<g transform="translate(64.00 189.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="203.80" font-size="13.6" fill="#FFFFFF">System</text>
+<text x="64.00" y="249.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(255,255,255,0.5)">QUICK ACCESS</text>
+<g transform="translate(64.00 273.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="287.80" font-size="13.6" fill="#FFFFFF">Home</text>
+<g transform="translate(64.00 317.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="331.80" font-size="13.6" fill="#FFFFFF">Downloads</text>
+<path transform="translate(64.00 361.00) scale(0.8333)" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8zm2 16H8v-2h8zm0-4H8v-2h8zm-3-5V3.5L18.5 9z" fill="#FFFFFF"/>
+<text x="100.00" y="375.80" font-size="13.6" fill="#FFFFFF">Documents</text>
+<path transform="translate(64.00 405.00) scale(0.8333)" d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2M8 20H4v-4h4zm0-6H4v-4h4zm0-6H4V4h4zm6 12h-4v-4h4zm0-6h-4v-4h4zm0-6h-4V4h4zm6 12h-4v-4h4zm0-6h-4v-4h4zm0-6h-4V4h4z" fill="#FFFFFF"/>
+<text x="100.00" y="419.80" font-size="13.6" fill="#FFFFFF">Desktop</text>
+<text x="64.00" y="465.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(255,255,255,0.5)">DEVICES</text>
+<g transform="rotate(180 244 461)"><g transform="translate(237.00 454.00) scale(0.5833)" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.25L6.75 10.5M12 5.25L17.25 10.5M12 5.25V18.75"/></g></g>
+<g transform="translate(64.00 489.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8.25H19.5V15.75H4.5V8.25ZM7.5 15.75V18H16.5V15.75M16.5 12.75H16.5075M13.5 12.75H13.5075"/></g>
+<text x="100.00" y="503.80" font-size="13.6" fill="#FFFFFF">Studio Archive</text>
+<g transform="translate(64.00 533.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 7.5L6.75 5.25M15.75 7.5L17.25 5.25M8.25 7.5H15.75C16.9926 7.5 18 8.50736 18 9.75V15C18 16.2426 16.9926 17.25 15.75 17.25V18.75M8.25 7.5C7.00736 7.5 6 8.50736 6 9.75V15C6 16.2426 7.00736 17.25 8.25 17.25V18.75M9.75 12V12.0075M14.25 12V12.0075M9 18.75H15"/></g>
+<text x="100.00" y="547.80" font-size="13.6" fill="#FFFFFF">Pixel 8</text>
+</g>
+<rect x="48" y="604" width="224" height="44" rx="8" fill="#38BDF8" fill-opacity="0.15"/>
+<g transform="translate(64.00 616.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.25H19.5V18.75H4.5V5.25ZM4.5 10.5H11.25V18.75M11.25 5.25V14.25H19.5M11.25 14.25H15.75"/></g>
+<text x="100.00" y="630.80" font-size="13.6" font-weight="700" fill="#FFFFFF">Storage Analyzer</text>
+<g transform="translate(64.00 668.00) scale(0.8333)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 8.25H15.75V15.75H8.25V8.25ZM5.25 5.25H12.75V12.75H5.25V5.25ZM11.25 11.25H18.75V18.75H11.25V11.25"/></g>
+<text x="100.00" y="682.80" font-size="13.6" font-weight="700" fill="#FFFFFF">Transfer Hub</text>
+<path transform="translate(64.00 720.00) scale(0.8333)" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6" fill="#FFFFFF"/>
+<text x="100.00" y="734.80" font-size="13.6" font-weight="700" fill="#FFFFFF">Settings</text>
+<g transform="translate(328.00 122.00) scale(1.1667)" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.25H19.5V18.75H4.5V5.25ZM4.5 10.5H11.25V18.75M11.25 5.25V14.25H19.5M11.25 14.25H15.75"/></g>
+<text x="368.00" y="144.00" font-size="24" font-weight="800" fill="#FFFFFF">Storage Analyzer</text>
+<rect x="328" y="176" width="864" height="72" rx="16" fill="#2A3445" filter="url(#fsz-card)"/>
+<rect x="344.5" y="192.5" width="539.823" height="39" rx="8" fill="none" stroke="rgba(255,255,255,0.23)"/>
+<g transform="translate(358.00 204.00) scale(0.6667)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="382.00" y="217.50" font-size="16" fill="#FFFFFF">/Users/nora/Documents</text>
+<rect x="901.323" y="194.25" width="93.1872" height="35.5" rx="8" fill="none" stroke="#38BDF8" stroke-opacity="0.5"/>
+<text x="947.92" y="216.75" font-size="14" font-weight="600" text-anchor="middle" fill="#38BDF8">Browse...</text>
+<rect x="1011.0101999999999" y="193.75" width="164.98980000000003" height="36.5" rx="8" fill="#38BDF8" filter="url(#fsz-btn)"/>
+<g transform="translate(1023.01 204.00) scale(0.6667)" fill="none" stroke="rgba(0,0,0,0.87)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.75H6.75C5.50736 3.75 4.5 4.75736 4.5 6V17.25C4.5 18.4926 5.50736 19.5 6.75 19.5H17.25C18.4926 19.5 19.5 18.4926 19.5 17.25V13.5M14.25 4.5H19.5V9.75M19.125 4.875L12.75 11.25M9.75 12C9.75 13.2426 10.7574 14.25 12 14.25C13.2426 14.25 14.25 13.2426 14.25 12C14.25 10.7574 13.2426 9.75 12 9.75C10.7574 9.75 9.75 10.7574 9.75 12Z"/></g>
+<text x="1047.01" y="216.75" font-size="14" font-weight="600" fill="rgba(0,0,0,0.87)">Analyze Storage</text>
+<text x="328.00" y="286.00" font-size="12" fill="rgba(255,255,255,0.7)">Total Size Scanned</text>
+<text x="328.00" y="324.30" font-size="34" font-weight="800" fill="#38BDF8">41.37 GB</text>
+<text x="520.89" y="286.00" font-size="12" fill="rgba(255,255,255,0.7)">Files</text>
+<text x="520.89" y="314.80" font-size="24" font-weight="600" fill="#FFFFFF">12,486</text>
+<text x="635.09" y="286.00" font-size="12" fill="rgba(255,255,255,0.7)">Directories</text>
+<text x="635.09" y="314.80" font-size="24" font-weight="600" fill="#FFFFFF">1,318</text>
+<text x="328.00" y="372.00" font-size="14" font-weight="700" fill="#FFFFFF">Visual Breakdown (Largest Items)</text>
+<clipPath id="fsz-tm"><rect x="328" y="388" width="864" height="272" rx="16"/></clipPath>
+<rect x="328" y="388" width="864" height="272" rx="16" fill="#181F2D" filter="url(#fsz-card)"/>
+<g clip-path="url(#fsz-tm)">
+<rect x="328.00" y="388" width="305.33" height="272" fill="#2b6f73"/>
+<rect x="328.50" y="388.5" width="304.33" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<text x="333.00" y="401.50" font-size="10.4" font-weight="700" fill="#FFFFFF">Revit Models</text>
+<text x="333.00" y="412.00" font-size="9.6" fill="rgba(255,255,255,0.7)">14.62 GB</text>
+<rect x="633.33" y="388" width="186.08" height="272" fill="#7c5b21"/>
+<rect x="633.83" y="388.5" width="185.08" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<text x="638.33" y="401.50" font-size="10.4" font-weight="700" fill="#FFFFFF">Kestrel Bay</text>
+<text x="638.33" y="412.00" font-size="9.6" fill="rgba(255,255,255,0.7)">8.91 GB</text>
+<rect x="819.42" y="388" width="135.33" height="272" fill="#4f6f52"/>
+<rect x="819.92" y="388.5" width="134.33" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<text x="824.42" y="401.50" font-size="10.4" font-weight="700" fill="#FFFFFF">Renders Archive</text>
+<text x="824.42" y="412.00" font-size="9.6" fill="rgba(255,255,255,0.7)">6.48 GB</text>
+<rect x="954.75" y="388" width="80.82" height="272" fill="#8a4f61"/>
+<rect x="955.25" y="388.5" width="79.82" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<text x="959.75" y="401.50" font-size="10.4" font-weight="700" fill="#FFFFFF">Site Surveys</text>
+<text x="959.75" y="412.00" font-size="9.6" fill="rgba(255,255,255,0.7)">3.87 GB</text>
+<rect x="1035.57" y="388" width="57.22" height="272" fill="#4d5f82"/>
+<rect x="1036.07" y="388.5" width="56.22" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<text x="1040.57" y="401.50" font-size="10.4" font-weight="700" fill="#FFFFFF">Client…</text>
+<text x="1040.57" y="412.00" font-size="9.6" fill="rgba(255,255,255,0.7)">2.74 GB</text>
+<rect x="1092.80" y="388" width="33.83" height="272" fill="#83613b"/>
+<rect x="1093.30" y="388.5" width="32.83" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<text x="1097.80" y="401.50" font-size="10.4" font-weight="700" fill="#FFFFFF">P…</text>
+<text x="1097.80" y="412.00" font-size="9.6" fill="rgba(255,255,255,0.7)">1.…</text>
+<rect x="1126.63" y="388" width="19.63" height="272" fill="#2b6f73"/>
+<rect x="1127.13" y="388.5" width="18.63" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<text x="1131.63" y="401.50" font-size="10.4" font-weight="700" fill="#FFFFFF">…</text>
+<rect x="1146.26" y="388" width="8.41" height="272" fill="#7c5b21"/>
+<rect x="1146.76" y="388.5" width="7.41" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<rect x="1154.67" y="388" width="4.26" height="272" fill="#4f6f52"/>
+<rect x="1155.17" y="388.5" width="3.26" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+<rect x="1158.93" y="388" width="1.97" height="272" fill="#8a4f61"/>
+<rect x="1159.43" y="388.5" width="0.97" height="271" fill="none" stroke="rgba(0,0,0,0.2)"/>
+</g>
+<rect x="280" y="732" width="960" height="28" fill="#1E293B"/>
+<path d="M280 732.5H1240" stroke="rgba(255,255,255,0.12)"/>
+<text x="296.00" y="750.00" font-size="12" fill="rgba(255,255,255,0.7)">Ready</text>
+<path d="M349.1 740V752" stroke="rgba(255,255,255,0.12)"/>
+<text x="366.11" y="750.00" font-size="12" fill="rgba(255,255,255,0.7)">14 items</text>
+<text x="1224.00" y="750.00" font-size="12" font-weight="700" text-anchor="end" fill="#38BDF8">File System Engine v0.1.0-Stable</text>
+</g>
+<rect x="40.5" y="40.5" width="1199" height="719" rx="7.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.10"/>
+</svg>

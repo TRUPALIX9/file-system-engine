@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="fss-t fss-d">
+<title id="fss-t">File System Engine: Settings</title>
+<desc id="fss-d">The Settings tab in the light theme on macOS: the System Permissions card shows an Access Granted chip for Full Disk Access and a Configure macOS Permissions button, and the Appearance card has a Light, Dark and System theme toggle with Light selected.</desc>
+<defs>
+<linearGradient id="fss-cv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9F2F9"/><stop offset="1" stop-color="#F3F7FB"/></linearGradient>
+<radialGradient id="fss-glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(900 180) scale(720 520)"><stop offset="0" stop-color="#38BDF8" stop-opacity="0.14"/><stop offset="1" stop-color="#38BDF8" stop-opacity="0"/></radialGradient>
+<filter id="fss-sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0F172A" flood-opacity="0.18"/></filter>
+<filter id="fss-btn" x="-10%" y="-20%" width="120%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-color="#000" flood-opacity="0.35"/></filter>
+<filter id="fss-logo-sh" x="-40%" y="-40%" width="180%" height="190%"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/></filter>
+<filter id="fss-pop" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#000" flood-opacity="0.35"/></filter>
+<filter id="fss-card" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000" flood-opacity="0.22"/></filter>
+</defs>
+<rect width="1280" height="800" fill="url(#fss-cv)"/>
+<rect width="1280" height="800" fill="url(#fss-glow)"/>
+<rect x="40" y="40" width="1200" height="720" rx="8" fill="#F8FAFC" filter="url(#fss-sh)"/>
+<clipPath id="fss-win"><rect x="40" y="40" width="1200" height="720" rx="8"/></clipPath>
+<g clip-path="url(#fss-win)" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<rect x="40" y="40" width="1200" height="720" fill="#F8FAFC"/>
+<rect x="40" y="40" width="1200" height="32" fill="#E8E9EC"/>
+<path d="M40 71.5H1240" stroke="#CDD0D5"/>
+<circle cx="60" cy="56" r="6" fill="#C3C6CC"/>
+<circle cx="80" cy="56" r="6" fill="#C3C6CC"/>
+<circle cx="100" cy="56" r="6" fill="#C3C6CC"/>
+<text x="640.00" y="60.50" font-size="13" font-weight="600" text-anchor="middle" fill="rgba(0,0,0,0.72)">File System Engine</text>
+<rect x="40" y="72" width="240" height="688" fill="#E2E8F0"/>
+<path d="M279.5 72V760" stroke="rgba(0,0,0,0.12)"/>
+<rect x="56" y="88" width="32" height="32" rx="8" fill="#0F172A" filter="url(#fss-logo-sh)"/>
+<g transform="translate(61 93) scale(0.34375)"><rect x="4" y="4" width="56" height="56" rx="13" fill="#0F172A"/>
+<path d="M14 22C14 19.7909 15.7909 18 18 18H26.1228C27.4385 18 28.6678 18.6527 29.4032 19.7428L31.3496 22.625H46C48.2091 22.625 50 24.4159 50 26.625V41C50 43.2091 48.2091 45 46 45H18C15.7909 45 14 43.2091 14 41V22Z" fill="#E2E8F0"/>
+<rect x="20" y="27" width="24" height="14" rx="3" fill="#0F172A" stroke="#38BDF8" stroke-width="1.8"/>
+<rect x="23" y="30" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<rect x="29" y="30" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<rect x="35" y="30" width="4" height="3.5" rx="1" fill="#14B8A6"/>
+<rect x="23" y="35" width="4" height="3.5" rx="1" fill="#38BDF8"/>
+<path d="M29 36.75H39" stroke="#E2E8F0" stroke-width="1.8" stroke-linecap="round"/></g>
+<text x="100.00" y="100.00" font-size="12.8" font-weight="900" letter-spacing="-0.3" fill="rgba(0,0,0,0.87)">File System Engine</text>
+<text x="100.00" y="116.00" font-size="10.4" fill="rgba(0,0,0,0.38)">v0.1.0-Stable</text>
+<path d="M40 136.5H279" stroke="rgba(0,0,0,0.12)"/>
+<clipPath id="fss-side"><rect x="40" y="145" width="239" height="451"/></clipPath>
+<g clip-path="url(#fss-side)">
+<text x="64.00" y="165.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(0,0,0,0.38)">SYSTEM</text>
+<g transform="translate(64.00 189.00) scale(0.8333)" fill="none" stroke="rgba(0,0,0,0.54)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="203.80" font-size="13.6" fill="rgba(0,0,0,0.87)">System</text>
+<text x="64.00" y="249.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(0,0,0,0.38)">QUICK ACCESS</text>
+<g transform="translate(64.00 273.00) scale(0.8333)" fill="none" stroke="rgba(0,0,0,0.54)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="287.80" font-size="13.6" fill="rgba(0,0,0,0.87)">Home</text>
+<g transform="translate(64.00 317.00) scale(0.8333)" fill="none" stroke="rgba(0,0,0,0.54)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6.75H18C19.2426 6.75 20.25 7.75736 20.25 9V10.5C20.25 11.7426 19.2426 12.75 18 12.75H6C4.75736 12.75 3.75 11.7426 3.75 10.5V9C3.75 7.75736 4.75736 6.75 6 6.75ZM6 12.75H18C19.2426 12.75 20.25 13.7574 20.25 15V16.5C20.25 17.7426 19.2426 18.75 18 18.75H6C4.75736 18.75 3.75 17.7426 3.75 16.5V15C3.75 13.7574 4.75736 12.75 6 12.75ZM7.5 9.75H7.5075M7.5 15.75H7.5075"/></g>
+<text x="100.00" y="331.80" font-size="13.6" fill="rgba(0,0,0,0.87)">Downloads</text>
+<path transform="translate(64.00 361.00) scale(0.8333)" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8zm2 16H8v-2h8zm0-4H8v-2h8zm-3-5V3.5L18.5 9z" fill="rgba(0,0,0,0.54)"/>
+<text x="100.00" y="375.80" font-size="13.6" fill="rgba(0,0,0,0.87)">Documents</text>
+<path transform="translate(64.00 405.00) scale(0.8333)" d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2M8 20H4v-4h4zm0-6H4v-4h4zm0-6H4V4h4zm6 12h-4v-4h4zm0-6h-4v-4h4zm0-6h-4V4h4zm6 12h-4v-4h4zm0-6h-4v-4h4zm0-6h-4V4h4z" fill="rgba(0,0,0,0.54)"/>
+<text x="100.00" y="419.80" font-size="13.6" fill="rgba(0,0,0,0.87)">Desktop</text>
+<text x="64.00" y="465.50" font-size="12" font-weight="700" letter-spacing="1" fill="rgba(0,0,0,0.38)">DEVICES</text>
+<g transform="rotate(180 244 461)"><g transform="translate(237.00 454.00) scale(0.5833)" fill="none" stroke="rgba(0,0,0,0.38)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.25L6.75 10.5M12 5.25L17.25 10.5M12 5.25V18.75"/></g></g>
+<g transform="translate(64.00 489.00) scale(0.8333)" fill="none" stroke="rgba(0,0,0,0.54)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8.25H19.5V15.75H4.5V8.25ZM7.5 15.75V18H16.5V15.75M16.5 12.75H16.5075M13.5 12.75H13.5075"/></g>
+<text x="100.00" y="503.80" font-size="13.6" fill="rgba(0,0,0,0.87)">Studio Archive</text>
+<g transform="translate(64.00 533.00) scale(0.8333)" fill="none" stroke="rgba(0,0,0,0.54)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 7.5L6.75 5.25M15.75 7.5L17.25 5.25M8.25 7.5H15.75C16.9926 7.5 18 8.50736 18 9.75V15C18 16.2426 16.9926 17.25 15.75 17.25V18.75M8.25 7.5C7.00736 7.5 6 8.50736 6 9.75V15C6 16.2426 7.00736 17.25 8.25 17.25V18.75M9.75 12V12.0075M14.25 12V12.0075M9 18.75H15"/></g>
+<text x="100.00" y="547.80" font-size="13.6" fill="rgba(0,0,0,0.87)">Pixel 8</text>
+</g>
+<g transform="translate(64.00 616.00) scale(0.8333)" fill="none" stroke="rgba(0,0,0,0.54)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.25H19.5V18.75H4.5V5.25ZM4.5 10.5H11.25V18.75M11.25 5.25V14.25H19.5M11.25 14.25H15.75"/></g>
+<text x="100.00" y="630.80" font-size="13.6" font-weight="700" fill="rgba(0,0,0,0.87)">Storage Analyzer</text>
+<g transform="translate(64.00 668.00) scale(0.8333)" fill="none" stroke="rgba(0,0,0,0.54)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 8.25H15.75V15.75H8.25V8.25ZM5.25 5.25H12.75V12.75H5.25V5.25ZM11.25 11.25H18.75V18.75H11.25V11.25"/></g>
+<text x="100.00" y="682.80" font-size="13.6" font-weight="700" fill="rgba(0,0,0,0.87)">Transfer Hub</text>
+<rect x="48" y="708" width="224" height="44" rx="8" fill="#38BDF8" fill-opacity="0.15"/>
+<path transform="translate(64.00 720.00) scale(0.8333)" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6" fill="rgba(0,0,0,0.54)"/>
+<text x="100.00" y="734.80" font-size="13.6" font-weight="700" fill="rgba(0,0,0,0.87)">Settings</text>
+<text x="410.00" y="121.00" font-size="24" font-weight="800" fill="rgba(0,0,0,0.87)">Settings</text>
+<rect x="410.0" y="142" width="700" height="144" rx="8" fill="#E2E8F0" filter="url(#fss-card)"/>
+<path transform="translate(426.00 160.00) scale(1.0000)" d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11z" fill="#38BDF8"/>
+<text x="458.00" y="177.50" font-size="16" font-weight="700" fill="rgba(0,0,0,0.87)">System Permissions</text>
+<rect x="993.8" y="160" width="100.2" height="24" rx="12" fill="#2E7D32"/>
+<text x="1043.92" y="175.60" font-size="10.4" font-weight="700" text-anchor="middle" fill="#FFFFFF">Access Granted</text>
+<text x="426.00" y="208.50" font-size="14" fill="rgba(0,0,0,0.6)">Granting Full Disk Access allows the engine to browse protected system folders and connected drives.</text>
+<rect x="426.5" y="230.5" width="215.3" height="30" rx="8" fill="none" stroke="#38BDF8" stroke-opacity="0.5"/>
+<text x="534.14" y="249.50" font-size="13" font-weight="600" text-anchor="middle" fill="#38BDF8">Configure macOS Permissions</text>
+<rect x="410.0" y="302" width="700" height="132" rx="8" fill="#E2E8F0" filter="url(#fss-card)"/>
+<path transform="translate(426.00 320.00) scale(1.0000)" d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8m-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12m3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8m5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8m3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5" fill="#38BDF8"/>
+<text x="458.00" y="337.50" font-size="16" font-weight="700" fill="rgba(0,0,0,0.87)">Appearance</text>
+<text x="426.00" y="394.00" font-size="14" fill="rgba(0,0,0,0.87)">Theme preference</text>
+<clipPath id="fss-tg"><rect x="900.2" y="370" width="193.8" height="38" rx="8"/></clipPath>
+<g clip-path="url(#fss-tg)"><rect x="900.2" y="370" width="59.6" height="38" fill="rgba(0,0,0,0.08)"/></g>
+<rect x="900.7" y="370.5" width="192.8" height="37" rx="7.5" fill="none" stroke="rgba(0,0,0,0.12)"/>
+<text x="930.07" y="393.60" font-size="13" font-weight="500" text-anchor="middle" letter-spacing="0.37" fill="rgba(0,0,0,0.87)">LIGHT</text>
+<path d="M960.4 370V408" stroke="rgba(0,0,0,0.12)"/>
+<text x="988.48" y="393.60" font-size="13" font-weight="500" text-anchor="middle" letter-spacing="0.37" fill="rgba(0,0,0,0.54)">DARK</text>
+<path d="M1017.6 370V408" stroke="rgba(0,0,0,0.12)"/>
+<text x="1055.53" y="393.60" font-size="13" font-weight="500" text-anchor="middle" letter-spacing="0.37" fill="rgba(0,0,0,0.54)">SYSTEM</text>
+<rect x="280" y="732" width="960" height="28" fill="#E2E8F0"/>
+<path d="M280 732.5H1240" stroke="rgba(0,0,0,0.12)"/>
+<text x="296.00" y="750.00" font-size="12" fill="rgba(0,0,0,0.6)">Ready</text>
+<path d="M349.1 740V752" stroke="rgba(0,0,0,0.12)"/>
+<text x="366.11" y="750.00" font-size="12" fill="rgba(0,0,0,0.6)">14 items</text>
+<text x="1224.00" y="750.00" font-size="12" font-weight="700" text-anchor="end" fill="#38BDF8">File System Engine v0.1.0-Stable</text>
+</g>
+<rect x="40.5" y="40.5" width="1199" height="719" rx="7.5" fill="none" stroke="#0F172A" stroke-opacity="0.14"/>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="280" viewBox="0 0 720 280" fill="none" role="img" aria-labelledby="fsll-t fsll-d">
+<title id="fsll-t">File System Engine</title>
+<desc id="fsll-d">File System Engine logo for dark backgrounds: the same folder and engine-grid app mark as logo.svg beside the two-line wordmark in light slate, so it reads on GitHub's dark theme.</desc>
+<defs>
+<linearGradient id="fsll-bg" x1="20" y1="20" x2="260" y2="300" gradientUnits="userSpaceOnUse"><stop stop-color="#1E293B"/><stop offset="1" stop-color="#0F172A"/></linearGradient>
+<linearGradient id="fsll-accent" x1="54" y1="52" x2="214" y2="214" gradientUnits="userSpaceOnUse"><stop stop-color="#38BDF8"/><stop offset="1" stop-color="#14B8A6"/></linearGradient>
+</defs>
+<rect x="20" y="20" width="240" height="240" rx="52" fill="url(#fsll-bg)"/>
+<rect x="20.75" y="20.75" width="238.5" height="238.5" rx="51.25" stroke="#94A3B8" stroke-opacity="0.28" stroke-width="1.5"/>
+<rect x="62" y="66" width="62" height="24" rx="12" fill="#334155"/>
+<path d="M54 92C54 81.5066 62.5066 73 73 73H117.037C123.286 73 129.127 76.1016 132.627 81.2798L141.891 95H207C217.493 95 226 103.507 226 114V184C226 194.493 217.493 203 207 203H73C62.5066 203 54 194.493 54 184V92Z" fill="#E2E8F0"/>
+<rect x="82" y="117" width="116" height="68" rx="14" fill="#0F172A" stroke="url(#fsll-accent)" stroke-width="6"/>
+<rect x="96" y="131" width="24" height="20" rx="4" fill="url(#fsll-accent)"/>
+<rect x="128" y="131" width="24" height="20" rx="4" fill="#38BDF8" fill-opacity="0.86"/>
+<rect x="160" y="131" width="24" height="20" rx="4" fill="#14B8A6" fill-opacity="0.9"/>
+<rect x="96" y="157" width="24" height="20" rx="4" fill="#38BDF8" fill-opacity="0.78"/>
+<rect x="128" y="157" width="24" height="20" rx="4" fill="#E2E8F0"/>
+<path d="M160 167H184" stroke="url(#fsll-accent)" stroke-width="6" stroke-linecap="round"/>
+<text x="312" y="136" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="700" letter-spacing="0.5">File System</text>
+<text x="312" y="210" fill="#CBD5E1" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="700" letter-spacing="0.5">Engine</text>
+</svg>
