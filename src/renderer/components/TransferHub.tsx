@@ -18,9 +18,11 @@ interface TransferHubProps {
   onSelectEntries: (entries: FileEntry[], pane: 'left' | 'right') => void;
   onOpenEntry: (entry: FileEntry, pane: 'left' | 'right') => void;
   onNavigateTo: (path: string, pane: 'left' | 'right') => void;
-  onContextMenu: (e: React.MouseEvent, entry: FileEntry) => void;
+  onContextMenu: (e: React.MouseEvent, entry: FileEntry, pane: 'left' | 'right') => void;
+  onNewFolder: (pane: 'left' | 'right') => void;
   onExecuteTransfer: (kind: 'copy' | 'move') => void;
   globalError: string | null;
+  paneErrors: { left: string | null; right: string | null };
   isTransferring: boolean;
   allProviders?: StorageProviderDescriptor[];
   onSelectProvider?: (p: StorageProviderDescriptor) => void;
@@ -41,8 +43,10 @@ export const TransferHub: React.FC<TransferHubProps> = ({
   onOpenEntry,
   onNavigateTo,
   onContextMenu,
+  onNewFolder,
   onExecuteTransfer,
   globalError,
+  paneErrors,
   isTransferring,
   allProviders,
   onSelectProvider
@@ -98,8 +102,8 @@ export const TransferHub: React.FC<TransferHubProps> = ({
             onOpenEntry={onOpenEntry}
             onNavigateTo={onNavigateTo}
             onContextMenu={onContextMenu}
-            onNewFolder={() => {}}
-            globalError={globalError}
+            onNewFolder={() => onNewFolder('left')}
+            globalError={globalError || paneErrors.left}
             focusedPane={focusedPane}
             setFocusedPane={setFocusedPane}
             allProviders={allProviders}
@@ -125,8 +129,8 @@ export const TransferHub: React.FC<TransferHubProps> = ({
             onOpenEntry={onOpenEntry}
             onNavigateTo={onNavigateTo}
             onContextMenu={onContextMenu}
-            onNewFolder={() => {}}
-            globalError={globalError}
+            onNewFolder={() => onNewFolder('right')}
+            globalError={globalError || paneErrors.right}
             focusedPane={focusedPane}
             setFocusedPane={setFocusedPane}
             allProviders={allProviders}

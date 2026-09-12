@@ -17,7 +17,9 @@ export function useFileSystem(isMac: boolean) {
   const [selectedEntriesRight, setSelectedEntriesRight] = useState<FileEntry[]>([]);
   const [loadingLeft, setLoadingLeft] = useState(false);
   const [loadingRight, setLoadingRight] = useState(false);
+  // `error` is app-wide (engine or device inventory); browse failures stay on their own pane.
   const [error, setError] = useState<string | null>(null);
+  const [paneErrors, setPaneErrors] = useState<{ left: string | null; right: string | null }>({ left: null, right: null });
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [hasFullDiskAccess, setHasFullDiskAccess] = useState<boolean | null>(null);
   const [hasStartedUp, setHasStartedUp] = useState(false);
@@ -51,8 +53,10 @@ export function useFileSystem(isMac: boolean) {
     const engine = (window as any).fileSystemEngine;
     if (!engine) return;
 
+    const setPaneError = (message: string | null) => setPaneErrors(prev => ({ ...prev, [pane]: message }));
+
     if (pane === 'left') setLoadingLeft(true); else setLoadingRight(true);
-    setError(null);
+    setPaneError(null);
 
     // Safety: Ensure path is a string and not empty for IPC validation
     if (typeof path !== 'string' || path.length === 0) {
@@ -65,12 +69,8 @@ export function useFileSystem(isMac: boolean) {
       safePath = safePath.slice(0, -1);
     }
 
-    // Safety: If it clearly looks like a file (has an extension and not a known folder), don't browse it
-    const isLikelyFile = /\.[a-zA-Z0-0]{1,10}$/.test(safePath) && !['/','C:\\'].includes(safePath);
-    if (isLikelyFile) {
-      console.warn(`useFileSystem: browseProvider aborted - path looks like a file: ${safePath}`);
-      return;
-    }
+    // Callers only browse directory entries, and the main process rejects files, so folders
+    // with dotted names (Safari.app, com.apple.TCC) are browsed like any other folder.
 
     try {
       console.log(`useFileSystem: Browsing ${provider.id} at ${safePath} (pane: ${pane})`);
@@ -86,12 +86,12 @@ export function useFileSystem(isMac: boolean) {
         else setListingRight(result.data.listing);
       } else {
         if (pane === 'left') setListing(null); else setListingRight(null);
-        setError(result.error.message);
+        setPaneError(result.error.message);
       }
     } catch (e: any) {
       if (pane === 'left') setLoadingLeft(false); else setLoadingRight(false);
       if (pane === 'left') setListing(null); else setListingRight(null);
-      setError(e.message || "Failed to browse location");
+      setPaneError(e.message || "Failed to browse location");
     }
   }, []);
 
@@ -161,6 +161,7 @@ export function useFileSystem(isMac: boolean) {
     loadingRight,
     error,
     setError,
+    paneErrors,
     loadState,
     hasFullDiskAccess,
     hasStartedUp,
