@@ -2,10 +2,6 @@ import { shell } from "electron";
 import { cp, mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname, join, posix } from "node:path";
 import { randomUUID } from "node:crypto";
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
-
-const execAsync = promisify(exec);
 import type {
   ExecuteOperationPlanRequest,
   ExecuteOperationPlanResult,
@@ -17,7 +13,6 @@ import { DesktopFilesystemProvider } from "@main/providers/DesktopFilesystemProv
 import { AndroidAdbProvider } from "@main/providers/AndroidAdbProvider";
 import { AppError } from "@main/app/AppError";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
-import { getAdbPath } from "@main/devices/adbPath";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
 import { setMacOsTags } from "@main/storage/macTags";
 
@@ -167,7 +162,7 @@ export class FileOperationService {
           if (sourceRef.providerId !== destRef.providerId) {
              throw new AppError("not-implemented", "Copying between different Android devices is not supported yet.");
           }
-          await execAsync(`adb -s ${(sourceProvider as AndroidAdbProvider).descriptor.serial} shell "cp -r \\"${sourceRef.path}\\" \\"${destRef.path}\\""`);
+          await (sourceProvider as AndroidAdbProvider).copyWithin(sourceRef.path, destRef.path);
           return;
         }
 
@@ -278,9 +273,7 @@ export class FileOperationService {
         const provider = this.registry.get(destRef.providerId);
 
         if (provider.kind === "android-adb") {
-          // No easy way to create empty file via ADB without shell, just touch it
-          const adbPath = await getAdbPath();
-          await execAsync(`${adbPath} -s ${(provider as AndroidAdbProvider).descriptor.serial} shell "touch \\"${destRef.path}\\""`);
+          await (provider as AndroidAdbProvider).createFile(destRef.path);
           return;
         }
 

@@ -1,8 +1,6 @@
 import { lstat, readdir } from "node:fs/promises";
 import type { Dirent } from "node:fs";
 import { basename, extname, join, posix } from "node:path";
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
 import type {
   FileEntry,
   FolderSizeSummary,
@@ -16,9 +14,7 @@ import { AppError } from "@main/app/AppError";
 import { ProviderRegistry } from "@main/providers/providerRegistry";
 import { assertPathInsideRoot } from "@main/security/pathValidation";
 import type { AndroidProviderDescriptor } from "@shared/types";
-import { getAdbPath } from "@main/devices/adbPath";
-
-const execAsync = promisify(exec);
+import { adbShell, shellQuote } from "@main/providers/AndroidAdbProvider";
 
 const TREEMAP_COLORS = ["#2b6f73", "#7c5b21", "#4f6f52", "#8a4f61", "#4d5f82", "#83613b"];
 
@@ -215,8 +211,7 @@ export class StorageAnalysisService {
 
     try {
       // Use adb shell ls -lR for recursive listing
-      const adbPath = await getAdbPath();
-      const { stdout } = await execAsync(`${adbPath} -s ${descriptor.serial} shell "ls -lR \\"${rootPath}\\""`);
+      const stdout = await adbShell(descriptor.serial, `ls -lR -- ${shellQuote(rootPath)}`);
       const blocks = stdout.split('\n\n');
       
       for (const block of blocks) {

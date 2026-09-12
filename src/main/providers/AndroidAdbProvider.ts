@@ -7,6 +7,21 @@ import { getAdbPath } from "../devices/adbPath";
 
 const execFileAsync = promisify(execFile);
 
+/**
+ * Quotes one argument for the device-side shell that `adb shell` runs.
+ * Single quotes stop $(...), backticks and $VAR from expanding on the phone.
+ */
+export function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+/** Runs a command on the device through execFile, so the host shell is never involved. */
+export async function adbShell(serial: string, command: string): Promise<string> {
+  const adbPath = await getAdbPath();
+  const { stdout } = await execFileAsync(adbPath, ["-s", serial, "shell", command], { maxBuffer: 64 * 1024 * 1024 });
+  return stdout;
+}
+
 export class AndroidAdbProvider implements StorageProvider {
   constructor(public readonly descriptor: AndroidProviderDescriptor) { }
 
@@ -25,17 +40,12 @@ export class AndroidAdbProvider implements StorageProvider {
 
     const directoryPath = request.location.path;
     try {
-      const adbPath = await getAdbPath();
       // Add trailing slash to force listing contents if it's a symlink (like /sdcard)
       const normalizedPath = directoryPath.endsWith('/') ? directoryPath : `${directoryPath}/`;
       
       console.log(`Android Provider: Browsing "${normalizedPath}" on device ${this.descriptor.serial}`);
       
-      // Use execFile with array of arguments to avoid shell injection and escaping issues
-      const { stdout } = await execFileAsync(adbPath, [
-        "-s", this.descriptor.serial, 
-        "shell", `ls -la "${normalizedPath}"`
-      ]);
+      const stdout = await adbShell(this.descriptor.serial, `ls -la -- ${shellQuote(normalizedPath)}`);
       
       const lines = stdout.split('\n').map(l => l.trim()).filter(Boolean);
       console.log(`Android Provider: Received ${lines.length} lines of output.`);
@@ -150,8 +160,7 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for delete.");
     }
     try {
-      const adbPath = await getAdbPath();
-      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `rm -rf "${androidPath}"`]);
+      await adbShell(this.descriptor.serial, `rm -rf -- ${shellQuote(androidPath)}`);
     } catch (error: any) {
       throw new Error(`ADB delete failed: ${error.message}`);
     }
@@ -162,10 +171,31 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for rename.");
     }
     try {
-      const adbPath = await getAdbPath();
-      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `mv "${oldPath}" "${newPath}"`]);
+      await adbShell(this.descriptor.serial, `mv -n -- ${shellQuote(oldPath)} ${shellQuote(newPath)}`);
     } catch (error: any) {
       throw new Error(`ADB rename failed: ${error.message}`);
+    }
+  }
+
+  async copyWithin(sourcePath: string, destinationPath: string): Promise<void> {
+    if (this.descriptor.authorizationState !== "authorized") {
+      throw new Error("Device not authorized for copy.");
+    }
+    try {
+      await adbShell(this.descriptor.serial, `cp -r -- ${shellQuote(sourcePath)} ${shellQuote(destinationPath)}`);
+    } catch (error: any) {
+      throw new Error(`ADB copy failed: ${error.message}`);
+    }
+  }
+
+  async createFile(androidPath: string): Promise<void> {
+    if (this.descriptor.authorizationState !== "authorized") {
+      throw new Error("Device not authorized for file creation.");
+    }
+    try {
+      await adbShell(this.descriptor.serial, `touch -- ${shellQuote(androidPath)}`);
+    } catch (error: any) {
+      throw new Error(`ADB touch failed: ${error.message}`);
     }
   }
 
@@ -174,8 +204,7 @@ export class AndroidAdbProvider implements StorageProvider {
       throw new Error("Device not authorized for directory creation.");
     }
     try {
-      const adbPath = await getAdbPath();
-      await execFileAsync(adbPath, ["-s", this.descriptor.serial, "shell", `mkdir -p "${androidPath}"`]);
+      await adbShell(this.descriptor.serial, `mkdir -p -- ${shellQuote(androidPath)}`);
     } catch (error: any) {
       throw new Error(`ADB mkdir failed: ${error.message}`);
     }

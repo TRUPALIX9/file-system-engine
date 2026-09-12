@@ -1,13 +1,14 @@
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { join } from "path";
 import { homedir } from "os";
 import { existsSync } from "fs";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 let cachedAdbPath: string | null = null;
 
+/** Absolute path to adb (or "adb" from PATH). Use with execFile only; it is not shell-quoted. */
 export async function getAdbPath(): Promise<string> {
   if (cachedAdbPath) return cachedAdbPath;
 
@@ -22,15 +23,15 @@ export async function getAdbPath(): Promise<string> {
 
   for (const path of candidates) {
     if (existsSync(path)) {
-      // Use quotes only if there are spaces
-      cachedAdbPath = path.includes(" ") ? `"${path}"` : path;
+      // Returned unquoted: callers pass it to execFile, never to a shell.
+      cachedAdbPath = path;
       return cachedAdbPath;
     }
   }
 
   // 2. Try system PATH as fallback
   try {
-    await execAsync("adb version");
+    await execFileAsync("adb", ["version"]);
     cachedAdbPath = "adb";
     return cachedAdbPath;
   } catch {
