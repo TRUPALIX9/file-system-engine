@@ -1,6 +1,7 @@
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { posix } from "path";
+import { lstat } from "fs/promises";
 import type { StorageProvider } from "./StorageProvider";
 import type { BrowseRequest, BrowseResult, FileEntry, AndroidProviderDescriptor } from "@shared/types";
 import { getAdbPath } from "../devices/adbPath";
@@ -13,6 +14,22 @@ const execFileAsync = promisify(execFile);
  */
 export function shellQuote(value: string): string {
   return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+/** Printed by the device when a destination is already taken (stdout, so it works even where adb drops exit codes). */
+export const EXISTS_MARKER = "__FSE_DESTINATION_EXISTS__";
+
+/**
+ * Wraps a device command so it only runs when `destination` is free. Plain `mv`/`cp -r` onto an
+ * existing folder would nest the item inside it, and `mv -n` silently does nothing.
+ */
+export function unlessExists(destination: string, command: string): string {
+  const quoted = shellQuote(destination);
+  return `if [ -e ${quoted} ] || [ -L ${quoted} ]; then echo ${EXISTS_MARKER}; else ${command}; fi`;
+}
+
+function destinationTaken(path: string, where: string): Error {
+  return new Error(`An item named "${posix.basename(path)}" already exists ${where}.`);
 }
 
 /** Runs a command on the device through execFile, so the host shell is never involved. */
@@ -135,6 +152,14 @@ export class AndroidAdbProvider implements StorageProvider {
     if (this.descriptor.authorizationState !== "authorized") {
       throw new Error("Device not authorized for pull.");
     }
+    // adb pull overwrites a local file (and nests into a local folder), so refuse a taken name.
+    const localTaken = await lstat(localPath).then(() => true, (error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") return false;
+      throw error;
+    });
+    if (localTaken) {
+      throw destinationTaken(localPath, "in the destination folder");
+    }
     try {
       const adbPath = await getAdbPath();
       await execFileAsync(adbPath, ["-s", this.descriptor.serial, "pull", androidPath, localPath]);
@@ -146,6 +171,11 @@ export class AndroidAdbProvider implements StorageProvider {
   async push(localPath: string, androidPath: string): Promise<void> {
     if (this.descriptor.authorizationState !== "authorized") {
       throw new Error("Device not authorized for push.");
+    }
+    // adb push overwrites a device file (and nests into a device folder), so refuse a taken name.
+    const check = await adbShell(this.descriptor.serial, unlessExists(androidPath, "true"));
+    if (check.includes(EXISTS_MARKER)) {
+      throw destinationTaken(androidPath, "on the device");
     }
     try {
       const adbPath = await getAdbPath();
@@ -170,10 +200,14 @@ export class AndroidAdbProvider implements StorageProvider {
     if (this.descriptor.authorizationState !== "authorized") {
       throw new Error("Device not authorized for rename.");
     }
+    let stdout: string;
     try {
-      await adbShell(this.descriptor.serial, `mv -n -- ${shellQuote(oldPath)} ${shellQuote(newPath)}`);
+      stdout = await adbShell(this.descriptor.serial, unlessExists(newPath, `mv -- ${shellQuote(oldPath)} ${shellQuote(newPath)}`));
     } catch (error: any) {
       throw new Error(`ADB rename failed: ${error.message}`);
+    }
+    if (stdout.includes(EXISTS_MARKER)) {
+      throw destinationTaken(newPath, "on the device");
     }
   }
 
@@ -181,10 +215,14 @@ export class AndroidAdbProvider implements StorageProvider {
     if (this.descriptor.authorizationState !== "authorized") {
       throw new Error("Device not authorized for copy.");
     }
+    let stdout: string;
     try {
-      await adbShell(this.descriptor.serial, `cp -r -- ${shellQuote(sourcePath)} ${shellQuote(destinationPath)}`);
+      stdout = await adbShell(this.descriptor.serial, unlessExists(destinationPath, `cp -r -- ${shellQuote(sourcePath)} ${shellQuote(destinationPath)}`));
     } catch (error: any) {
       throw new Error(`ADB copy failed: ${error.message}`);
+    }
+    if (stdout.includes(EXISTS_MARKER)) {
+      throw destinationTaken(destinationPath, "on the device");
     }
   }
 

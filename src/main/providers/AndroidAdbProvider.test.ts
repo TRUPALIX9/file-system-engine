@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { shellQuote } from "./AndroidAdbProvider";
+import { EXISTS_MARKER, shellQuote, unlessExists } from "./AndroidAdbProvider";
+
+describe("unlessExists", () => {
+  it("only runs the command when the quoted destination is free", () => {
+    expect(unlessExists("/sdcard/Pictures/it's.jpg", "mv -- '/sdcard/a.jpg' '/sdcard/Pictures/it'\\''s.jpg'")).toBe(
+      `if [ -e '/sdcard/Pictures/it'\\''s.jpg' ] || [ -L '/sdcard/Pictures/it'\\''s.jpg' ]; then echo ${EXISTS_MARKER}; ` +
+        `else mv -- '/sdcard/a.jpg' '/sdcard/Pictures/it'\\''s.jpg'; fi`
+    );
+  });
+});
 
 describe("shellQuote", () => {
   it("wraps a plain path in single quotes", () => {
