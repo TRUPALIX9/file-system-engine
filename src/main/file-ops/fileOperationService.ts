@@ -1,6 +1,6 @@
 import { shell } from "electron";
-import { cp, mkdir, rename, writeFile } from "node:fs/promises";
-import { dirname, join, posix } from "node:path";
+import { cp, lstat, mkdir, rename, writeFile } from "node:fs/promises";
+import { basename, dirname, join, posix } from "node:path";
 import { randomUUID } from "node:crypto";
 import type {
   ExecuteOperationPlanRequest,
@@ -28,6 +28,20 @@ function assertSafeName(name: string): string {
   }
 
   return name;
+}
+
+/** Throws when something already exists at the destination, so moves and renames never clobber it. */
+async function assertDestinationFree(destination: string): Promise<void> {
+  try {
+    await lstat(destination);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return;
+    }
+    throw error;
+  }
+
+  throw new AppError("filesystem-error", `An item named "${basename(destination)}" already exists in the destination folder.`);
 }
 
 export class FileOperationService {
@@ -203,9 +217,11 @@ export class FileOperationService {
           return;
         }
 
-        // Standard desktop move
+        // Standard desktop move. fs.rename replaces an existing file on macOS and Linux,
+        // so check the destination first.
         const source = this.resolveRef(sourceRef);
         const destination = this.resolveRef(destRef);
+        await assertDestinationFree(destination);
 
         try {
           await rename(source, destination);
@@ -236,6 +252,7 @@ export class FileOperationService {
 
         const source = this.resolveRef(sourceRef);
         const destination = join(dirname(source), newName);
+        await assertDestinationFree(destination);
         await rename(source, destination);
         return;
       }
